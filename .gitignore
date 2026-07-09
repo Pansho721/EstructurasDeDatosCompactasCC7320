@@ -127,3 +127,4 @@ __pypackages__/
 
 # Edgelist
 *.edgelist
+graphs/
