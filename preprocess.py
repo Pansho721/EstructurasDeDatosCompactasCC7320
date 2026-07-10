@@ -91,19 +91,73 @@ def map_reduce_count_edges(input_path, output_path="aggregated.edgelist", sep='\
                 src, dst, sent = parts[0].strip(), parts[1].strip(), 0
             else:
                 continue
-            counter[(src, dst, sent)] += 1
+            counter[(src, dst)] += 1
 
     with open(output_path, 'w', newline='', encoding='utf-8') as outf:
         writer = csv.writer(outf, delimiter=sep)
-        for (src, dst, sent), cnt in counter.items():
-            writer.writerow([src, dst, sent, cnt])
+        for (src, dst), cnt in counter.items():
+            writer.writerow([src, dst, cnt])
 
     return output_path
+
+
+def relabel_edgelist_to_numeric(
+    input_path,
+    output_path="graphs/reddit_weighted_aggregated_numeric.edgelist",
+    mapping_path="graphs/reddit_node_mapping.tsv",
+    sep='\t',
+):
+    node_to_id = {}
+    next_id = 0
+    output_rows = []
+
+    def get_id(node):
+        nonlocal next_id
+        if node not in node_to_id:
+            node_to_id[node] = next_id
+            next_id += 1
+        return node_to_id[node]
+
+    with open(input_path, 'r', encoding='utf-8') as infile:
+        for line in infile:
+            line = line.rstrip('\n')
+            if not line:
+                continue
+            parts = line.split(sep)
+            if len(parts) < 2:
+                continue
+
+            src = parts[0].strip()
+            dst = parts[1].strip()
+            if not src or not dst:
+                continue
+
+            src_id = get_id(src)
+            dst_id = get_id(dst)
+
+            if len(parts) >= 3:
+                output_rows.append([src_id, dst_id, parts[2].strip()])
+            else:
+                output_rows.append([src_id, dst_id])
+
+    with open(output_path, 'w', newline='', encoding='utf-8') as outf:
+        writer = csv.writer(outf, delimiter=sep)
+        writer.writerows(output_rows)
+
+    with open(mapping_path, 'w', newline='', encoding='utf-8') as mapf:
+        writer = csv.writer(mapf, delimiter=sep)
+        for node, node_id in sorted(node_to_id.items(), key=lambda x: x[1]):
+            writer.writerow([node, node_id])
+
+    return output_path, mapping_path
 
 if __name__ == "__main__":
     input_file = "soc-redditHyperlinks-body.tsv"
     weight_file = "graphs/reddit_weighted.edgelist"
     aggregated_file = "graphs/reddit_weighted_aggregated.edgelist"
+    numeric_file = "graphs/reddit_weighted_aggregated_numeric.edgelist"
+    mapping_file = "graphs/reddit_node_mapping.tsv"
 
     directedWeightedGraphFile(input_file, weight_file)
     map_reduce_count_edges(weight_file, aggregated_file, sep='\t')
+    relabel_edgelist_to_numeric(aggregated_file, numeric_file, mapping_file, sep='\t')
