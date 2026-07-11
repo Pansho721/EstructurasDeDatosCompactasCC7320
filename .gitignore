@@ -128,3 +128,6 @@ __pypackages__/
 # Edgelist
 *.edgelist
 graphs/
+
+# Binary files
+benchmark_bin
