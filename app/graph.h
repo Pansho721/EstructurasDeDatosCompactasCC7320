@@ -3,6 +3,7 @@
 #include <string>
 
 extern int N;
+extern int E;
 
 class BenchmarkDoc {
 public:

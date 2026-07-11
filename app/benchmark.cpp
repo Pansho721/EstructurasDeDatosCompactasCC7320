@@ -1,10 +1,9 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 #include <ctime>
-#include <graph.h>
-#include <graphBitVector.h>
-
-
+#include "graph.h"
+#include "graphBitVector.h"
 
 
 BenchmarkDoc General(graph g){
@@ -14,12 +13,12 @@ BenchmarkDoc General(graph g){
 }
 
 
-BenchmarkDoc GraphBitVector(){
+BenchmarkDoc runGraphBitVectorBenchmark(){
     std::cout << "GraphBitVector Benchmark" << std::endl;
     BenchmarkDoc doc("GraphBitVector", 0.0, 0.0, 0.0, 0.0, 0.0);
     auto initConstructionTime = std::chrono::high_resolution_clock::now();
 
-    //Construction of the GraphBitVector object
+    GraphBitVector graphBitVector("reddit_hyperlinks_body.txt", N, E);
 
     auto endConstructionTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
@@ -30,21 +29,21 @@ BenchmarkDoc GraphBitVector(){
     return doc;
 }
 
-BenchmarkDoc GraphSequence(){
+BenchmarkDoc runGraphSequenceBenchmark(){
     std::cout << "GraphSequence Benchmark" << std::endl;
     BenchmarkDoc doc("GraphSequence", 0.0, 0.0, 0.0, 0.0, 0.0);
 
     return doc;
 }
 
-BenchmarkDoc LabeledGraph(){
+BenchmarkDoc runLabeledGraphBenchmark(){
     std::cout << "LabeledGraph Benchmark" << std::endl;
     BenchmarkDoc doc("LabeledGraph", 0.0, 0.0, 0.0, 0.0, 0.0);
 
     return doc;
 }
 
-BenchmarkDoc ClusteredK2Tree(){
+BenchmarkDoc runClusteredK2TreeBenchmark(){
     std::cout << "ClusteredK2Tree Benchmark" << std::endl;
     BenchmarkDoc doc("ClusteredK2Tree", 0.0, 0.0, 0.0, 0.0, 0.0);
 
@@ -56,16 +55,16 @@ int main(int argc, char* argv[]){
     std::cout << "/// BENCHMARK START ///" << std::endl;
 
     std::cout << "-- Graph Bitvector --" << std::endl;
-    BenchmarkDoc gbv = GraphBitVector();
+    BenchmarkDoc gbv = runGraphBitVectorBenchmark();
 
     std::cout << "-- Graph Sequence --" << std::endl;
-    BenchmarkDoc gs = GraphSequence();
+    BenchmarkDoc gs = runGraphSequenceBenchmark();
 
     std::cout << "-- Labeled Graph --" << std::endl;
-    BenchmarkDoc lg = LabeledGraph();
+    BenchmarkDoc lg = runLabeledGraphBenchmark();
 
     std::cout << "-- Clustered K2Tree --" << std::endl;
-    BenchmarkDoc ck2t = ClusteredK2Tree();
+    BenchmarkDoc ck2t = runClusteredK2TreeBenchmark();
 
     std::cout << "/// BENCHMARK END ///" << std::endl;
 
