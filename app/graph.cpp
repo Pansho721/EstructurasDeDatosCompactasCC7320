@@ -2,7 +2,7 @@
 #include <string>
 
 // This number is exclusive for the reddit hyperlinks body graph
-// Number of nodes in the graph
+// Number of ints in the graph
 int N = 35777;
 
 class BenchmarkDoc{
@@ -32,10 +32,6 @@ class BenchmarkDoc{
         }
 };
 
-struct node{
-    int id;
-};
-
 class graph{
     private:
         std::string name;
@@ -44,19 +40,19 @@ class graph{
         graph(){}
         ~graph(){}
     
-        virtual bool *adj(node n, node m){
+        virtual bool adj(int n, int m){
             return 0;
         }
-        virtual node *neigh(node n){
-            return node();
-        }
-        virtual node *rneigh(node n){
-            return node();
-        }
-        virtual int outDegree(node n){
+        virtual int neigh(int n, int j){
             return 0;
         }
-        virtual int inDegree(node n){
+        virtual int rneigh(int n, int j){
+            return 0;
+        }
+        virtual int outDegree(int n){
+            return 0;
+        }
+        virtual int inDegree(int n){
             return 0;
         }
 

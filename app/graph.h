@@ -18,10 +18,6 @@ public:
     void print();
 };
 
-struct node {
-    int id;
-};
-
 class graph {
 private:
     std::string name;
@@ -30,11 +26,11 @@ public:
     graph();
     virtual ~graph();
 
-    virtual bool* adj(node n, node m);
-    virtual node* neigh(node n);
-    virtual node* rneigh(node n);
-    virtual int outDegree(node n);
-    virtual int inDegree(node n);
+    virtual bool adj(int n, int m);
+    virtual int neigh(int n, int j);
+    virtual int rneigh(int n, int j);
+    virtual int outDegree(int n);
+    virtual int inDegree(int n);
 
     std::string getName();
 };
