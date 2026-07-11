@@ -19,6 +19,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::cout << "GraphBitVector Benchmark" << std::endl;
     BenchmarkDoc doc("GraphBitVector", 0.0, 0.0, 0.0, 0.0, 0.0);
 
+
+    // =========================
     // Construction of the GraphBitVector
     auto initConstructionTime = std::chrono::high_resolution_clock::now();
 
@@ -29,7 +31,7 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     doc.ConstructionTime = constructionDuration.count();
 
 
-
+    // =========================
     // Benchmark adjacency check
     auto initAdjTime = std::chrono::high_resolution_clock::now();
 
@@ -40,6 +42,7 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     doc.adjTime = adjDuration.count();
 
 
+    // =========================
     // Benchmark neighbor
     auto initNeighTime = std::chrono::high_resolution_clock::now();
 
@@ -49,6 +52,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
     doc.rneighTime = neighDuration.count();
 
+
+    // =========================
     // Benchmark outDegree
     auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
 
@@ -58,6 +63,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
     doc.outDegreeTime = outDegreeDuration.count();
 
+    
+    // =========================
     // Benchmark inDegree and reverse neighbor
     doc.inDegreeTime = MAX; // Not implemented in GraphBitVector
     doc.rneighTime = MAX; // Not implemented in GraphBitVector
