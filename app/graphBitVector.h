@@ -1,29 +1,13 @@
 #pragma once
 
-#include <string>
+#include <iostream>
 #include <utility>
+#include <fstream>
 #include <vector>
+#include <string>
 
 #include "graph.h"
-
-class bitVector {
-    private:
-        int size;
-        std::vector<bool> bits;
-        std::vector<int> acc;
-
-        int bsrch(int rank);
-
-    public:
-        bitVector();
-        explicit bitVector(int s);
-
-        void setBit(int index);
-        void finishSetUp();
-        bool access(int index);
-        int rank1(int index);
-        int select1(int rank);
-};
+#include "canonicalDS/bitVector.h"
 
 class GraphBitVector : public graph {
     private:
