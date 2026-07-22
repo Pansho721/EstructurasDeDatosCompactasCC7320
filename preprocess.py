@@ -103,7 +103,7 @@ def map_reduce_count_edges(input_path, output_path="aggregated.edgelist", sep='\
 
 def relabel_edgelist_to_numeric(
     input_path,
-    output_path="graphs/reddit_weighted_aggregated_numeric.edgelist",
+    output_path="graphs/reddit_numeric.edgelist",
     mapping_path="graphs/reddit_node_mapping.tsv",
     sep='\t',
 ):
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     input_file = "soc-redditHyperlinks-body.tsv"
     weight_file = "graphs/reddit_weighted.edgelist"
     aggregated_file = "graphs/reddit_weighted_aggregated.edgelist"
-    numeric_file = "graphs/reddit_weighted_aggregated_numeric.edgelist"
+    numeric_file = "graphs/reddit_numeric.edgelist"
     mapping_file = "graphs/reddit_node_mapping.tsv"
 
     directedWeightedGraphFile(input_file, weight_file)
