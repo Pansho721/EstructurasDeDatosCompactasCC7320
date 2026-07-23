@@ -13,7 +13,7 @@ class GraphSequence : public graph {
         int numNodes;
         int numEdges;
         std::vector<int> nodes;
-        std::vector<bitVector> adjM;
+        bitVector V;
 
         void addEdge(std::pair<int, int> edge);
 

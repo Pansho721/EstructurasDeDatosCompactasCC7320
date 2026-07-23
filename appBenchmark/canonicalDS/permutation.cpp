@@ -1,0 +1,77 @@
+#include "permutation.h"
+
+Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
+    B = bitVector(size);
+    V = bitVector(size);
+    for (int i = 0; i < size; ++i) {
+        B.clearBit(i);
+        V.clearBit(i);
+    }
+    for (int i = 0; i < size; ++i) {
+        if (not V.access(i)) {
+            V.setBit(i);
+            int j = pi[i];
+            int k = 1;
+            while (j != i) {
+                if (k % t == 0) {
+                    B.setBit(j);
+                }
+                V.setBit(j);
+                j = pi[j];
+                k++;
+            }
+            if (k > t){
+                B.setBit(i);
+            }
+        }
+    }
+    B.finishSetUp();
+
+    std::vector<int> S[B.rank1(size)];
+    for (int i = 0; i < size; ++i) {
+        if (B.access(i)) {
+            V.clearBit(i);
+            int j = pi[i];
+            while (V.access(j)) {
+                if (B.access(j)) {
+                    S[B.rank1(j)] = i;
+                }
+                V.clearBit(j);
+                j = pi[j];
+            }
+            if (B.access(j)) {
+                S[B.rank1(j)] = i;
+            }
+        }
+    }
+    this->S = S;
+    V.~bitVector();
+}
+
+int Permutation::access(int index) {
+    if (index < 0 || index >= size) return -1;
+    if (B.access(index)) {
+        return S[B.rank1(index)];
+    } else {
+        int j = index;
+        while (!B.access(j)) {
+            j = S[j];
+        }
+        return S[B.rank1(j)];
+    }
+}
+
+int Permutation::inverse(int index) {
+    if (index < 0 || index >= size) return -1;
+    int j = index;
+    bool s = true;
+    while (S[j] != index) {
+        if (s && B.access(j)){
+            j = S[B.rank1(j)];
+            s = false;
+        } else {
+            j = S[j];
+        }
+    }
+    return j;
+}

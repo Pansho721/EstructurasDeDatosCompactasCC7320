@@ -34,6 +34,12 @@ void bitVector::setBit(int index){
     bits[index] = true;
 }
 
+void bitVector::clearBit(int index){
+    if(index >= size) return;
+    if(index < 0) return;
+    bits[index] = false;
+}
+
 void bitVector::finishSetUp(){
     int count = 0;
     for(int i=0; i<size; i++){

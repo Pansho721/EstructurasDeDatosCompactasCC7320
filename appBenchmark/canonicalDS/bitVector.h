@@ -13,8 +13,10 @@ class bitVector {
     public:
         bitVector();
         explicit bitVector(int s);
+        ~bitVector() = default;
 
         void setBit(int index);
+        void clearBit(int index);
         void finishSetUp();
         bool access(int index);
         int rank1(int index);

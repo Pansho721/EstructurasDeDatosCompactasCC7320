@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-import powerlaw
-import os
 import pandas as pd
 import numpy as np
-import sys
+import powerlaw
 import glob
+import sys
+import os
 
 LOG = []
 
