@@ -20,14 +20,14 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
                 j = pi[j];
                 k++;
             }
-            if (k > t){
-                B.setBit(i);
-            }
+            // Every cycle needs at least one marked anchor, otherwise access()/inverse()
+            // would loop forever on cycles shorter than t (no k % t == 0 hit occurs).
+            B.setBit(i);
         }
     }
     B.finishSetUp();
 
-    std::vector<int> S[B.rank1(size)];
+    std::vector<int> S(B.rank1(size));
     for (int i = 0; i < size; ++i) {
         if (B.access(i)) {
             V.clearBit(i);
@@ -45,7 +45,6 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
         }
     }
     this->S = S;
-    V.~bitVector();
 }
 
 int Permutation::access(int index) {
@@ -55,7 +54,7 @@ int Permutation::access(int index) {
     } else {
         int j = index;
         while (!B.access(j)) {
-            j = S[j];
+            j = this->pi[j];
         }
         return S[B.rank1(j)];
     }
@@ -65,12 +64,12 @@ int Permutation::inverse(int index) {
     if (index < 0 || index >= size) return -1;
     int j = index;
     bool s = true;
-    while (S[j] != index) {
+    while (this->pi[j] != index) {
         if (s && B.access(j)){
             j = S[B.rank1(j)];
             s = false;
         } else {
-            j = S[j];
+            j = this->pi[j];
         }
     }
     return j;

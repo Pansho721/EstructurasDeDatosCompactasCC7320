@@ -4,14 +4,17 @@
 #include <vector>
 
 #include "bitVector.h"
+#include "permutation.h"
 
 class Sequence {
     private:
-        int Ssize;
+        int n;
         int sigma;
-        std::vector<bitVector> S; //Sigma
+        std::vector<bitVector> Ac; //Sigma
+        std::vector<bitVector> Dk; // permutation
+        std::vector<Permutation> pi; // permutation
     public:
-        Sequence(int n, int sigma);// naive constructor: seq = [1 .. sigma], length n
+        Sequence(std::vector<int> S, int sigma, int t = 4);
         int access(int index);
         int rank(int symbol, int index);
         int select(int symbol, int rank);
