@@ -27,7 +27,7 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
     }
     B.finishSetUp();
 
-    std::vector<int> S(B.rank1(size));
+    std::vector<int> S(B.rank1(size - 1) + 1);
     for (int i = 0; i < size; ++i) {
         if (B.access(i)) {
             V.clearBit(i);

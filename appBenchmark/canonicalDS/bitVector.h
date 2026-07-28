@@ -9,6 +9,7 @@ class bitVector {
         std::vector<int> acc;
 
         int bsrch(int rank);
+        int bsrch0(int rank);
 
     public:
         bitVector();
@@ -21,4 +22,6 @@ class bitVector {
         bool access(int index);
         int rank1(int index);
         int select1(int rank);
+        int select0(int rank);
+        int length();
 };

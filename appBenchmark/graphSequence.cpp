@@ -26,7 +26,7 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
     }
     this->N = Sequence(S, maxNode + 1);
     this->B = bitVector(N + E - 1);
-    for(int i=0; i<N; i+=1){
+    for(int i=0; i<(int)S.size(); i+=1){
         this->B.setBit(S[i]);
         for(int j=0; j<degree[S[i]]; j++){
             this->B.clearBit(S[i] + j);

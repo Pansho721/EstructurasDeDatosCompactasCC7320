@@ -20,6 +20,27 @@ int bitVector::bsrch(int rank){
     return -1;
 }
 
+int bitVector::bsrch0(int rank){
+    int left = 0;
+    int right = size - 1;
+    int mid;
+    while(left <= right){
+        mid = (left + right) / 2;
+        int r0 = (mid + 1) - acc[mid];
+        if(r0 == rank){
+            while(mid > 0 && (mid - acc[mid - 1]) == rank){
+                mid--;
+            }
+            return mid;
+        } else if(r0 < rank){
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return -1;
+}
+
 bitVector::bitVector() : size(0) {}
 
 bitVector::bitVector(int s){
@@ -68,4 +89,15 @@ int bitVector::select1(int rank){
     if(rank < 0) return 0;
     if(rank > acc[size - 1]) return this->size + 1;
     return bsrch(rank);
+}
+
+int bitVector::select0(int rank){
+    if(rank < 0) return 0;
+    int totalZeros = size - acc[size - 1];
+    if(rank > totalZeros) return this->size + 1;
+    return bsrch0(rank);
+}
+
+int bitVector::length(){
+    return size;
 }

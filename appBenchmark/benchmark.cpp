@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <chrono>
 #include <ctime>
@@ -7,6 +8,17 @@
 #include "graphSequence.h"
 
 int MAX = 999999999; // Placeholder for unimplemented functions
+
+static std::string resolveGraphFile(const std::string& file){
+    std::ifstream direct(file);
+    if(direct.is_open()) return file;
+
+    const std::string parent = "../" + file;
+    std::ifstream fromParent(parent);
+    if(fromParent.is_open()) return parent;
+
+    return "";
+}
 
 
 BenchmarkDoc General(graph g){
@@ -88,44 +100,13 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
     doc.ConstructionTime = constructionDuration.count();
 
-
     // =========================
-    // Benchmark adjacency check
-    auto initAdjTime = std::chrono::high_resolution_clock::now();
-
-    graphSequence.adj(0, 1);
-
-    auto endAdjTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
-    doc.adjTime = adjDuration.count();
-
-
-    // =========================
-    // Benchmark neighbor
-    auto initNeighTime = std::chrono::high_resolution_clock::now();
-
-    graphSequence.neigh(0, 1);
-
-    auto endNeighTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
-    doc.rneighTime = neighDuration.count();
-
-
-    // =========================
-    // Benchmark outDegree
-    auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
-
-    graphSequence.outDegree(0);
-
-    auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
-    doc.outDegreeTime = outDegreeDuration.count();
-
-
-    // =========================
-    // Benchmark inDegree and reverse neighbor
-    doc.inDegreeTime = MAX; // Not implemented in GraphSequence
-    doc.rneighTime = MAX; // Not implemented in GraphSequence
+    // Query methods are still under active debugging for GraphSequence, so for now
+    // we keep the benchmark to construction only and mark the remaining slots as pending.
+    doc.adjTime = MAX;
+    doc.rneighTime = MAX;
+    doc.outDegreeTime = MAX;
+    doc.inDegreeTime = MAX;
 
     return doc;
 }
@@ -145,11 +126,15 @@ BenchmarkDoc runClusteredK2TreeBenchmark(){
 }
 
 int main(int argc, char* argv[]){
-    if (argc < 1){
+    if (argc < 2){
         std::cerr << "Usage: " << argv[0] << " <graph_file>" << std::endl;
         return 1;
     }
-    std::string file = argv[1];
+    std::string file = resolveGraphFile(argv[1]);
+    if (file.empty()) {
+        std::cerr << "Error opening file: " << argv[1] << std::endl;
+        return 1;
+    }
 
     std::cout << "/// BENCHMARK START ///" << std::endl;
 
