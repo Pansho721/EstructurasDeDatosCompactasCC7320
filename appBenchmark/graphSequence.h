@@ -23,4 +23,5 @@ class GraphSequence : public graph {
         bool adj(int n, int m) override;
         int neigh(int n, int j) override;
         int outDegree(int n) override;
+        int inDegree(int n) override;
 };

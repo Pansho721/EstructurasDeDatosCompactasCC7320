@@ -101,12 +101,45 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     doc.ConstructionTime = constructionDuration.count();
 
     // =========================
-    // Query methods are still under active debugging for GraphSequence, so for now
-    // we keep the benchmark to construction only and mark the remaining slots as pending.
-    doc.adjTime = MAX;
-    doc.rneighTime = MAX;
-    doc.outDegreeTime = MAX;
-    doc.inDegreeTime = MAX;
+    // Benchmark adjacency check
+    auto initAdjTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.adj(0, 1);
+
+    auto endAdjTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
+    doc.adjTime = adjDuration.count();
+
+    // =========================
+    // Benchmark neighbor
+    auto initNeighTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.neigh(0, 1);
+
+    auto endNeighTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
+    doc.rneighTime = neighDuration.count();
+
+    // =========================
+    // Benchmark outDegree
+    auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.outDegree(0);
+
+    auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
+    doc.outDegreeTime = outDegreeDuration.count();
+
+
+    // =========================
+    // Benchmark inDegree
+    auto initInDegreeTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.inDegree(0);
+
+    auto endInDegreeTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> inDegreeDuration = endInDegreeTime - initInDegreeTime;
+    doc.inDegreeTime = inDegreeDuration.count();
 
     return doc;
 }
@@ -139,7 +172,7 @@ int main(int argc, char* argv[]){
     std::cout << "/// BENCHMARK START ///" << std::endl;
 
     std::cout << "-- Graph Bitvector --" << std::endl;
-    BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
+    //BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
 
     std::cout << "-- Graph Sequence --" << std::endl;
     BenchmarkDoc gs = runGraphSequenceBenchmark(file);
@@ -153,7 +186,7 @@ int main(int argc, char* argv[]){
     std::cout << "/// BENCHMARK END ///" << std::endl;
 
     std::cout << "\n\n/// BENCHMARK RESULTS ///" << std::endl;
-    gbv.print();
+    //gbv.print();
     gs.print();
     lg.print();
     ck2t.print();

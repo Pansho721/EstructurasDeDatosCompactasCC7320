@@ -42,6 +42,10 @@ bool GraphSequence::adj(int v, int u){
     return  a - b;
 }
 
+int GraphSequence::inDegree(int v){
+    return this->N.rank(v, this->numEdges);
+}
+
 int GraphSequence::outDegree(int v){
     return this->B.select1(v+1) - this->B.select1(v) - 1;
 }
