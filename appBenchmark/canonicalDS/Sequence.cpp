@@ -94,9 +94,15 @@ int Sequence::rank(int symbol, int index) {
     return S[symbol - 1].rank1(index);
 }
 
-int Sequence::select(int symbol, int rank) {
+int Sequence::select(int symbol, int rank) {// select_c(j) <--> selsect(c,j)
+    const auto Ac = this->Ac[symbol];
     if (symbol < 1 || symbol > sigma) return -1; // Invalid symbol
     if (rank < 1) return -1; // Invalid rank
     if (rank == 0) return 0;
-    int s = this->Ac
+    int s = Ac.select1(rank);
+    if (s == -1) return -1; // Symbol not found
+    if (s > Ac.size) return this->n + 1; // Out of bounds
+    int jp = s - k * this->sigma;
+    int sL = this->Dk[k].select1(jp);
+    return (s-j)* this->sigma + this->pi[k].access(sL+jp);
 }
