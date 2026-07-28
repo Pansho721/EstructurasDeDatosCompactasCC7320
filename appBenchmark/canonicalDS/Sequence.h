@@ -14,6 +14,7 @@ class Sequence {
         std::vector<bitVector> Dk; // permutation
         std::vector<Permutation> pi; // permutation
     public:
+        Sequence();
         Sequence(std::vector<int> S, int sigma, int t = 4);
         int access(int index);
         int rank(int symbol, int index);

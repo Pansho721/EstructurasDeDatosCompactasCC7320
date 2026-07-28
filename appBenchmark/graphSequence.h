@@ -6,16 +6,15 @@
 
 #include "graph.h"
 #include "canonicalDS/bitVector.h"
+#include "canonicalDS/Sequence.h"
 
 class GraphSequence : public graph {
     private:
         std::string name;
         int numNodes;
         int numEdges;
-        std::vector<int> nodes;
-        bitVector V;
-
-        void addEdge(std::pair<int, int> edge);
+        Sequence N;
+        bitVector B;
 
     public:
         GraphSequence(std::string file, int N, int E);

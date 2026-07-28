@@ -1,6 +1,7 @@
 #include "Sequence.h"
-
 #include <algorithm>
+
+Sequence::Sequence() : n(0), sigma(0) {}
 
 Sequence::Sequence(std::vector<int> S, int sigma, int t) : n(S.size()), sigma(sigma) {
     const int numBlocks = (sigma > 0) ? ((n + sigma - 1) / sigma) : 0;

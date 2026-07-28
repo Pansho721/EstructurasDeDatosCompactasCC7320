@@ -4,6 +4,7 @@
 #include <ctime>
 #include "graph.h"
 #include "graphBitVector.h"
+#include "graphSequence.h"
 
 int MAX = 999999999; // Placeholder for unimplemented functions
 
@@ -72,9 +73,59 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     return doc;
 }
 
-BenchmarkDoc runGraphSequenceBenchmark(){
+BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     std::cout << "GraphSequence Benchmark" << std::endl;
     BenchmarkDoc doc("GraphSequence", 0.0, 0.0, 0.0, 0.0, 0.0);
+
+
+    // =========================
+    // Construction of the GraphSequence
+    auto initConstructionTime = std::chrono::high_resolution_clock::now();
+
+    GraphSequence graphSequence(file, N, E);
+
+    auto endConstructionTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
+    doc.ConstructionTime = constructionDuration.count();
+
+
+    // =========================
+    // Benchmark adjacency check
+    auto initAdjTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.adj(0, 1);
+
+    auto endAdjTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
+    doc.adjTime = adjDuration.count();
+
+
+    // =========================
+    // Benchmark neighbor
+    auto initNeighTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.neigh(0, 1);
+
+    auto endNeighTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
+    doc.rneighTime = neighDuration.count();
+
+
+    // =========================
+    // Benchmark outDegree
+    auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
+
+    graphSequence.outDegree(0);
+
+    auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
+    doc.outDegreeTime = outDegreeDuration.count();
+
+
+    // =========================
+    // Benchmark inDegree and reverse neighbor
+    doc.inDegreeTime = MAX; // Not implemented in GraphSequence
+    doc.rneighTime = MAX; // Not implemented in GraphSequence
 
     return doc;
 }
@@ -106,7 +157,7 @@ int main(int argc, char* argv[]){
     BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
 
     std::cout << "-- Graph Sequence --" << std::endl;
-    BenchmarkDoc gs = runGraphSequenceBenchmark();
+    BenchmarkDoc gs = runGraphSequenceBenchmark(file);
 
     std::cout << "-- Labeled Graph --" << std::endl;
     BenchmarkDoc lg = runLabeledGraphBenchmark();
