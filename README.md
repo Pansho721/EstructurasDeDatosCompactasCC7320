@@ -7,8 +7,8 @@ Compact analysis for a Reddit hyperlinks graph.
 
 ## Compile
 
-g++ app/benchmark.cpp app/graph.cpp app/graphBitVector.cpp -o app/benchmark_bin
+g++ -std=c++17 appBenchmark/benchmark.cpp appBenchmark/graph.cpp appBenchmark/graphBitVector.cpp appBenchmark/graphSequence.cpp appBenchmark/canonicalDS/bitVector.cpp appBenchmark/canonicalDS/Sequence.cpp appBenchmark/canonicalDS/permutation.cpp -IappBenchmark -IappBenchmark/canonicalDS -o appBenchmark/bin/benchmark_bin
 
 ## Run
 
-./app/benchmark_bin graphs/reddit_weighted_aggregated_numeric.edgelist
+./appBenchmark/bin/benchmark_bin graphs/reddit_numeric.edgelist
