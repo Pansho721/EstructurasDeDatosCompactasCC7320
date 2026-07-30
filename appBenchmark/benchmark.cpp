@@ -20,13 +20,21 @@ static std::string resolveGraphFile(const std::string& file){
     return "";
 }
 
-
-BenchmarkDoc General(graph g){
-    BenchmarkDoc doc(g.getName(), 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    return doc;
+void adjTEST(graph& graph){
+    bool result = graph.adj(0, 1);
 }
 
+void neighTEST(graph& graph){
+    int result = graph.neigh(0, 1);
+}
+
+void outDegreeTEST(graph& graph){
+    int result = graph.outDegree(0);
+}
+
+void inDegreeTEST(graph& graph){
+    int result = graph.inDegree(0);
+}
 
 BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::cout << "GraphBitVector Benchmark" << std::endl;
@@ -48,7 +56,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     // Benchmark adjacency check
     auto initAdjTime = std::chrono::high_resolution_clock::now();
 
-    graphBitVector.adj(0, 1);
+    adjTEST(graphBitVector);
+    //graphBitVector.adj(0, 1);
 
     auto endAdjTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
@@ -59,7 +68,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     // Benchmark neighbor
     auto initNeighTime = std::chrono::high_resolution_clock::now();
 
-    graphBitVector.neigh(0, 1);
+    neighTEST(graphBitVector);
+    //graphBitVector.neigh(0, 1);
 
     auto endNeighTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
@@ -70,7 +80,8 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     // Benchmark outDegree
     auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
 
-    graphBitVector.outDegree(0);
+    outDegreeTEST(graphBitVector);
+    //graphBitVector.outDegree(0);
 
     auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
@@ -104,7 +115,8 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     // Benchmark adjacency check
     auto initAdjTime = std::chrono::high_resolution_clock::now();
 
-    graphSequence.adj(0, 1);
+    //graphSequence.adj(0, 1);
+    adjTEST(graphSequence);
 
     auto endAdjTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
@@ -114,7 +126,9 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     // Benchmark neighbor
     auto initNeighTime = std::chrono::high_resolution_clock::now();
 
-    graphSequence.neigh(0, 1);
+
+    neighTEST(graphSequence);
+    //graphSequence.neigh(0, 1);
 
     auto endNeighTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
@@ -124,7 +138,8 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     // Benchmark outDegree
     auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
 
-    graphSequence.outDegree(0);
+    outDegreeTEST(graphSequence);
+    //graphSequence.outDegree(0);
 
     auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
@@ -135,7 +150,8 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     // Benchmark inDegree
     auto initInDegreeTime = std::chrono::high_resolution_clock::now();
 
-    graphSequence.inDegree(0);
+    inDegreeTEST(graphSequence);
+    //graphSequence.inDegree(0);
 
     auto endInDegreeTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> inDegreeDuration = endInDegreeTime - initInDegreeTime;
@@ -144,19 +160,6 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     return doc;
 }
 
-BenchmarkDoc runLabeledGraphBenchmark(){
-    std::cout << "LabeledGraph Benchmark" << std::endl;
-    BenchmarkDoc doc("LabeledGraph", 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    return doc;
-}
-
-BenchmarkDoc runClusteredK2TreeBenchmark(){
-    std::cout << "ClusteredK2Tree Benchmark" << std::endl;
-    BenchmarkDoc doc("ClusteredK2Tree", 0.0, 0.0, 0.0, 0.0, 0.0);
-
-    return doc;
-}
 
 int main(int argc, char* argv[]){
     if (argc < 2){
@@ -172,24 +175,17 @@ int main(int argc, char* argv[]){
     std::cout << "/// BENCHMARK START ///" << std::endl;
 
     std::cout << "-- Graph Bitvector --" << std::endl;
-    //BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
+    BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
 
     std::cout << "-- Graph Sequence --" << std::endl;
     BenchmarkDoc gs = runGraphSequenceBenchmark(file);
 
-    std::cout << "-- Labeled Graph --" << std::endl;
-    BenchmarkDoc lg = runLabeledGraphBenchmark();
-
-    std::cout << "-- Clustered K2Tree --" << std::endl;
-    BenchmarkDoc ck2t = runClusteredK2TreeBenchmark();
-
     std::cout << "/// BENCHMARK END ///" << std::endl;
 
     std::cout << "\n\n/// BENCHMARK RESULTS ///" << std::endl;
-    //gbv.print();
+
+    gbv.print();
     gs.print();
-    lg.print();
-    ck2t.print();
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 
 #include "graph.h"
 
@@ -20,6 +21,7 @@ BenchmarkDoc::BenchmarkDoc(std::string n, float constt, float adjt, float rneigh
 BenchmarkDoc::~BenchmarkDoc(){}
 
 void BenchmarkDoc::print(){
+    std::cout << std::fixed << std::setprecision(9);
     std::cout << "===== BENCHMARK RESULTS: " << name << " =====" << std::endl;
     std::cout << "Construction Time: " << ConstructionTime << std::endl;
     std::cout << "Adjacency Time: " << adjTime << std::endl;
