@@ -78,6 +78,13 @@ bool bitVector::access(int index){
     return bits[index];
 }
 
+int bitVector::rank0(int index){
+    if(index < 0 || index >= size){
+        return 0;
+    }
+    return (index + 1) - acc[index];
+}
+
 int bitVector::rank1(int index){
     if(index < 0 || index >= size){
         return 0;
@@ -100,4 +107,24 @@ int bitVector::select0(int rank){
 
 int bitVector::length(){
     return size;
+}
+
+int bitVector::pred0(int index){
+    if (index < 0 || index >= size) return -1;
+    return select0(rank0(index));
+}
+
+int bitVector::pred1(int index){
+    if (index < 0 || index >= size) return -1;
+    return select1(rank1(index));
+}
+
+int bitVector::succ0(int index){
+    if (index < 0 || index >= size) return -1;
+    return select0(rank0(index - 1) + 1);
+}
+
+int bitVector::succ1(int index){
+    if (index < 0 || index >= size) return -1;
+    return select1(rank1(index - 1) + 1);
 }
