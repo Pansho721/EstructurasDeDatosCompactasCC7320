@@ -95,7 +95,7 @@ def map_reduce_count_edges(input_path, output_path="aggregated.edgelist", sep='\
 
     with open(output_path, 'w', newline='', encoding='utf-8') as outf:
         writer = csv.writer(outf, delimiter=sep)
-        for (src, dst), cnt in counter.items():
+        for (src, dst), cnt in sorted(counter.items(), key=lambda item: (item[0][0], item[0][1])):
             writer.writerow([src, dst, cnt])
 
     return output_path
@@ -139,6 +139,8 @@ def relabel_edgelist_to_numeric(
                 output_rows.append([src_id, dst_id, parts[2].strip()])
             else:
                 output_rows.append([src_id, dst_id])
+
+    output_rows.sort(key=lambda row: (row[0], row[1], row[2] if len(row) >= 3 else ''))
 
     with open(output_path, 'w', newline='', encoding='utf-8') as outf:
         writer = csv.writer(outf, delimiter=sep)

@@ -1,5 +1,6 @@
 #include "graphBitVector.h"
 #include <cmath>
+#include <omp.h>
 
 void GraphBitVector::addEdge(std::pair<int, int> edge){
     if(adjM[edge.first].access(edge.second)) return;
@@ -27,6 +28,7 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     this->numNodes = N;
     this->numEdges = E;
     inputFile.close();
+    #pragma omp parallel for
     for(int i=0; i<N; i++){
         adjM[i].finishSetUp();
     }
@@ -46,5 +48,5 @@ int GraphBitVector::neigh(int n, int j){
 }
 
 int GraphBitVector::outDegree(int n){
-    return this->adjM[n].rank1(N - 1);
+    return this->adjM[n].rank1(this->numNodes - 1);
 }

@@ -21,7 +21,17 @@ static std::string resolveGraphFile(const std::string& file){
 }
 
 void adjTEST(graph& graph){
-    bool result = graph.adj(0, 1);
+
+    if (!graph.adj(0, 1)) std::cout << "Mismatch 1" << std::endl;
+    if (graph.adj(50, 50)) std::cout << "Mismatch 2" << std::endl;
+    if (!graph.adj(90, 91)) std::cout << "Mismatch 3" << std::endl;
+    if (graph.adj(119, 40)) std::cout << "Mismatch 4" << std::endl;
+    if (graph.adj(148, 13)) std::cout << "Mismatch 5" << std::endl;
+    if (!graph.adj(215, 225)) std::cout << "Mismatch 6" << std::endl;
+    if (!graph.adj(363, 408)) std::cout << "Mismatch 7" << std::endl;
+    if (graph.adj(4877, 5090)) std::cout << "Mismatch 8" << std::endl;
+    if (!graph.adj(7056, 1610)) std::cout << "Mismatch 9" << std::endl;
+    if (graph.adj(13200, 7777)) std::cout << "Mismatch 10" << std::endl;
 }
 
 void neighTEST(graph& graph){
