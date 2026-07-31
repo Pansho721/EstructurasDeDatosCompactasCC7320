@@ -1,4 +1,5 @@
 #include "graphBitVector.h"
+#include <cmath>
 
 void GraphBitVector::addEdge(std::pair<int, int> edge){
     if(adjM[edge.first].access(edge.second)) return;
@@ -32,7 +33,8 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
 }
 
 int GraphBitVector::size(){
-    return this->numNodes + this->numNodes;
+    int const numNodes = this->numNodes;
+    return 64 + numNodes + numNodes * std::log(numNodes);
 }
 
 bool GraphBitVector::adj(int n, int m){

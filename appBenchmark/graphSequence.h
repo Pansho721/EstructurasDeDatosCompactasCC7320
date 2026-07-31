@@ -10,7 +10,6 @@
 
 class GraphSequence : public graph {
     private:
-        std::string name;
         int numNodes;
         int numEdges;
         Sequence N;

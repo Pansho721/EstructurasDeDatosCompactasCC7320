@@ -11,20 +11,16 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
         return;
     }
     std::vector<int> S;
-    int maxNode = -1;
     std::string sEdge;
     std::vector<int> degree(N, 0);
     while(std::getline(inputFile, sEdge)){
         int u, v;
         std::istringstream iss(sEdge);
         iss >> u >> v;
-        S.push_back(u);
         S.push_back(v);
         degree[u]++;
-        if(u > maxNode) maxNode = u;
-        if(v > maxNode) maxNode = v;
     }
-    this->N = Sequence(S, maxNode + 1);
+    this->N = Sequence(S, N);
     this->B = bitVector(N + E - 1);
     for(int i=0; i<(int)S.size(); i+=1){
         this->B.setBit(S[i]);
@@ -57,5 +53,6 @@ int GraphSequence::neigh(int v, int j){
 }
 
 int GraphSequence::size(){
-    return this->numNodes + this->numEdges;
+    // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
+    return 2 * 32 + this->numEdges * 32 + this->numNodes + this->numEdges;
 }

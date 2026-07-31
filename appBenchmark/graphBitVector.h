@@ -11,7 +11,6 @@
 
 class GraphBitVector : public graph {
     private:
-        std::string name;
         int numNodes;
         int numEdges;
         std::vector<int> nodes;
