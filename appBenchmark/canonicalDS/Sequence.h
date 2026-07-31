@@ -11,7 +11,7 @@ class Sequence {
         int n;
         int sigma;
         std::vector<bitVector> Ac; //Sigma
-        std::vector<bitVector> Dk; // permutation
+        std::vector<bitVector> Dk;
         std::vector<Permutation> pi; // permutation
     public:
         Sequence();

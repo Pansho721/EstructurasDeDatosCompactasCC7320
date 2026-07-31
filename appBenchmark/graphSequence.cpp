@@ -37,9 +37,10 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
 }
 
 bool GraphSequence::adj(int v, int u){
-    int a = this->N.rank(u, (this->B.select1(v + 1) - (v + 1)));
-    int b = this->N.rank(u, (this->B.select1(v) -v));
-    return  a - b;
+    int b = this->B.select1(v);
+    int r1 = this->N.rank(u,b-v);
+    int r2 = this->N.rank(u,this->B.succ1(b+1)-v-1);
+    return r2 - r1 == 1;
 }
 
 int GraphSequence::inDegree(int v){
@@ -47,7 +48,8 @@ int GraphSequence::inDegree(int v){
 }
 
 int GraphSequence::outDegree(int v){
-    return this->B.select1(v+1) - this->B.select1(v) - 1;
+    int b = this->B.select1(v);
+    return this->B.succ1(b+1) - b - 1;
 }
 
 int GraphSequence::neigh(int v, int j){
