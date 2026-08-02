@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <unordered_set>
 #include <vector>
 
 #include "graph.h"
@@ -14,6 +15,9 @@ class GraphSequence : public graph {
         int numEdges;
         Sequence N;
         bitVector B;
+        std::unordered_set<long long> edgeIndex;
+
+        static long long encodeEdge(int from, int to);
 
     public:
         GraphSequence(std::string file, int N, int E);

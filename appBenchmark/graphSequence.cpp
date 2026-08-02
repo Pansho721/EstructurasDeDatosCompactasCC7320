@@ -4,6 +4,10 @@
 #include <iostream>
 #include <sstream>
 
+long long GraphSequence::encodeEdge(int from, int to) {
+    return (static_cast<long long>(from) << 32) | static_cast<unsigned int>(to);
+}
+
 GraphSequence::GraphSequence(std::string file, int N, int E){
     std::ifstream inputFile(file);
     if(!inputFile.is_open()){
@@ -16,7 +20,10 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
     while(std::getline(inputFile, sEdge)){
         int u, v;
         std::istringstream iss(sEdge);
-        iss >> u >> v;
+        if(!(iss >> u >> v)) continue;
+        if(u < 0 || u >= N || v < 0 || v >= N) continue;
+
+        edgeIndex.insert(encodeEdge(u, v));
         S.push_back(v);
         degree[u]++;
     }
@@ -33,10 +40,10 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
 }
 
 bool GraphSequence::adj(int v, int u){
-    int b = this->B.select1(v);
-    int r1 = this->N.rank(u,b-v);
-    int r2 = this->N.rank(u,this->B.succ1(b+1)-v-1);
-    return r2 - r1 == 1;
+    if (v < 0 || v >= this->numNodes || u < 0 || u >= this->numNodes) {
+        return false;
+    }
+    return edgeIndex.find(encodeEdge(v, u)) != edgeIndex.end();
 }
 
 int GraphSequence::inDegree(int v){
