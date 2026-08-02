@@ -15,5 +15,19 @@ int main() {
         std::cout << "seq.access(" << i << ") = " << seq.access(i) << std::endl;
     }
 
+    // Test rank
+    for (int symbol = 0; symbol < sigma; ++symbol) {
+        for (int index = 0; index < data.size(); ++index) {
+            std::cout << "seq.rank(" << symbol << ", " << index << ") = " << seq.rank(symbol, index) << std::endl;
+        }
+    }
+
+    // Test select
+    for (int symbol = 0; symbol < sigma; ++symbol) {
+        for (int rank = 1; rank <= data.size(); ++rank) {
+            std::cout << "seq.select(" << symbol << ", " << rank << ") = " << seq.select(symbol, rank) << std::endl;
+        }
+    }
+
     return 0;
 }

@@ -10,8 +10,8 @@ class Sequence {
     private:
         int n;
         int sigma;
-        std::vector<bitVector> Ac; //Sigma
-        std::vector<bitVector> Dk;
+        std::vector<bitVector> A; //Sigma
+        std::vector<bitVector> D;
         std::vector<Permutation> pi; // permutation
     public:
         Sequence();
