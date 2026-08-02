@@ -78,74 +78,53 @@ Sequence::Sequence(std::vector<int> S, int sigma, int t) : n(S.size()), sigma(si
 
 int Sequence::access(int index) {
     if (index < 0 || index >= n) {
-        throw std::out_of_range("Index out of bounds");
+        return -1;
     }
     const int k = index / sigma;
-    const int p = index - k * sigma; // local position within block k
+    const int ip = ((index - 1) % sigma) + 1;
+    const int j = this->pi[k].inverse(ip);
 
-    // p is a local position; pi[k].inverse(p) recovers the combined occurrence-rank r
-    // (0-based, symbols grouped in order) that Dk[k] was built with for that position.
-    const int r = this->pi[k].inverse(p);
-    const int pos = this->Dk[k].select0(r + 1); // position of the occurrence's own slot
-    return this->Dk[k].rank1(pos); // number of completed symbol-groups before pos == symbol
+    return this->Dk[k].select0(j) - j + 1;
 }
 
 int Sequence::rank(int symbol, int index) {
     if (symbol < 0 || symbol >= sigma) return -1; // Invalid symbol
-    if (index <= 0) return 0;
-    if (index > n) index = n;
+    if (index == 0) return 0;
+    if (index > n) return n + 1;
 
-    const int idx = index - 1; // last position included in the count
-    const int k = idx / sigma;
-    const int p = idx - k * sigma;
+    const int k = index / sigma;
+    const int ip = ((index - 1) % sigma) + 1;
+    const int sL = this->Dk[k].select1(symbol - 1) - (symbol - 1);
+    const int eL = this->Dk[k].select1(symbol) - symbol;
 
-    int cumulativeBeforeBlock = 0;
-    if (k > 0) {
-        // select0(k) is the gap right after block (k-1) in Ac[symbol]; everything before it
-        // (rank1) is the total count of `symbol` accumulated through block (k-1).
-        const int gapPos = this->Ac[symbol].select0(k);
-        cumulativeBeforeBlock = this->Ac[symbol].rank1(gapPos - 1);
+    int first = sL + 1;
+    int last = eL;
+    int j = sL;
+    while (first <= last) {
+        int mid = (first + last) / 2;
+        int value = this->pi[k].access(mid);
+        if (value <= ip) {
+            j = mid;
+            first = mid + 1;
+        } else {
+            last = mid - 1;
+        }
     }
 
-    int rangeStart = 0;
-    if (symbol > 0) {
-        const int prevBoundary = this->Dk[k].select1(symbol);
-        rangeStart = prevBoundary - this->Dk[k].rank1(prevBoundary - 1); // rank0(prevBoundary - 1)
-    }
-    const int boundary = this->Dk[k].select1(symbol + 1);
-    const int rangeEnd = boundary - this->Dk[k].rank1(boundary - 1); // rank0(boundary - 1), exclusive
+    return this->Ac[symbol].select0(k - 1) - (k - 1) - (j - sL);
 
-    int localCount = 0;
-    for (int r = rangeStart; r < rangeEnd; ++r) {
-        if (this->pi[k].access(r) <= p) localCount++;
-    }
-
-    return cumulativeBeforeBlock + localCount;
 }
 
-int Sequence::select(int symbol, int rank) { // select_c(j) <--> select(c, j)
+int Sequence::select(int symbol, int j) { // select_c(j) <--> select(c, j)
     if (symbol < 0 || symbol >= sigma) return -1; // Invalid symbol
-    if (rank < 1) return -1; // Invalid rank
+    if (j < 1) return -1;
+    if (j == 0) return 0;
 
-    const int pos = this->Ac[symbol].select1(rank);
-    if (pos < 0 || pos >= this->Ac[symbol].length()) return -1; // rank exceeds total occurrences
+    const int s = this->Ac[symbol].select1(j);
+    if (s > this->Ac.size()) return n + 1;
 
-    const int k = (pos + 1) - this->Ac[symbol].rank1(pos); // rank0(pos): completed blocks before this occurrence's block
+    const int jp = s - this->Ac[symbol].pred0(s);
+    const int sL = this->Dk[s-j+1].select1(symbol - 1) - (symbol - 1);
 
-    int cumulativeBeforeBlock = 0;
-    if (k > 0) {
-        const int gapPos = this->Ac[symbol].select0(k);
-        cumulativeBeforeBlock = this->Ac[symbol].rank1(gapPos - 1);
-    }
-    const int localRank1Based = rank - cumulativeBeforeBlock; // rank within block k
-
-    int rangeStart = 0;
-    if (symbol > 0) {
-        const int prevBoundary = this->Dk[k].select1(symbol);
-        rangeStart = prevBoundary - this->Dk[k].rank1(prevBoundary - 1); // rank0(prevBoundary - 1)
-    }
-    const int combinedRank = rangeStart + (localRank1Based - 1);
-
-    const int p = this->pi[k].access(combinedRank);
-    return k * sigma + p;
+    return (s - j) * sigma + this->pi[s-j+1].access(sL + jp);
 }

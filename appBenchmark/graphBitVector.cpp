@@ -1,6 +1,7 @@
 #include "graphBitVector.h"
 #include <cmath>
 #include <omp.h>
+#include <sstream>
 
 void GraphBitVector::addEdge(std::pair<int, int> edge){
     if(adjM[edge.first].access(edge.second)) return;
@@ -21,8 +22,13 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     }
     std::string sEdge;
     while(std::getline(inputFile, sEdge)){
+        if(sEdge.empty()) continue;
+
         int u, v;
-        inputFile >> u >> v;
+        std::istringstream iss(sEdge);
+        if(!(iss >> u >> v)) continue;
+        if(u < 0 || u >= N || v < 0 || v >= N) continue;
+
         addEdge(std::make_pair(nodes[u], nodes[v]));
     }
     this->numNodes = N;

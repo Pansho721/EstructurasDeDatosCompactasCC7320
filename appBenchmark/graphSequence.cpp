@@ -52,6 +52,10 @@ int GraphSequence::neigh(int v, int j){
     return this->N.access(this->B.select1(v) - v + j);
 }
 
+int GraphSequence::rneigh(int v, int j){
+    return this->B.select0(this->N.select(v, j) + v) - this->N.select(v, j);
+}
+
 int GraphSequence::size(){
     // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
     return 2 * 32 + this->numEdges * 32 + this->numNodes + this->numEdges;

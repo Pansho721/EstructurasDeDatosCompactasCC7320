@@ -21,6 +21,7 @@ class GraphSequence : public graph {
         int size();
         bool adj(int n, int m) override;
         int neigh(int n, int j) override;
+        int rneigh(int n, int j) override;
         int outDegree(int n) override;
         int inDegree(int n) override;
 };

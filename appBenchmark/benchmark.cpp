@@ -22,7 +22,8 @@ static std::string resolveGraphFile(const std::string& file){
 
 void adjTEST(graph& graph){
 
-    if (!graph.adj(0, 1)) std::cout << "Mismatch 1" << std::endl;
+    if (!graph.adj(0, 1)) std::cout << "Mismatch 1.1" << std::endl;
+    if (graph.adj(0, 10)) std::cout << "Mismatch 1.2" << std::endl;
     if (graph.adj(50, 50)) std::cout << "Mismatch 2" << std::endl;
     if (!graph.adj(90, 91)) std::cout << "Mismatch 3" << std::endl;
     if (graph.adj(119, 40)) std::cout << "Mismatch 4" << std::endl;
@@ -34,8 +35,8 @@ void adjTEST(graph& graph){
     if (graph.adj(13200, 7777)) std::cout << "Mismatch 10" << std::endl;
 }
 
-void neighTEST(graph& graph){
-    int result = graph.neigh(0, 1);
+void rneighTEST(graph& graph){
+    int result = graph.rneigh(0, 1);
 }
 
 void outDegreeTEST(graph& graph){
@@ -78,7 +79,7 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     // Benchmark neighbor
     auto initNeighTime = std::chrono::high_resolution_clock::now();
 
-    neighTEST(graphBitVector);
+    rneighTEST(graphBitVector);
     //graphBitVector.neigh(0, 1);
 
     auto endNeighTime = std::chrono::high_resolution_clock::now();
@@ -137,7 +138,7 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     auto initNeighTime = std::chrono::high_resolution_clock::now();
 
 
-    neighTEST(graphSequence);
+    rneighTEST(graphSequence);
     //graphSequence.neigh(0, 1);
 
     auto endNeighTime = std::chrono::high_resolution_clock::now();
