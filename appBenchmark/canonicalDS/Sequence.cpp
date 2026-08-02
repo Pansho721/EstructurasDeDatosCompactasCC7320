@@ -4,7 +4,7 @@
 Sequence::Sequence() : n(0), sigma(0) {}
 
 Sequence::Sequence(std::vector<int> S, int sigma, int t) : n(S.size()), sigma(sigma) {
-    std::vector<int> F(sigma + 1, 0);
+    std::vector<int> F(sigma + 1, 0);//F[0,sigma]
     const int block = n / sigma;
 
     for (int i = 0; i < n; ++i) {

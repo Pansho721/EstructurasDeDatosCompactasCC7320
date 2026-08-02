@@ -131,3 +131,4 @@ graphs/
 
 # Binary files
 benchmark_bin
+appBenchmark/bin/*

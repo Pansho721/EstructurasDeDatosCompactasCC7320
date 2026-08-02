@@ -1,15 +1,14 @@
 # Para Bit Vectors
-Desde la carpeta test
-> g++ -std=c++17 bitVectorTEST.cpp ../canonicalDS/bitVector.cpp -o ../bin/bvTEST
-
 Desde root
 > g++ -std=c++17 appBenchmark/test/bitVectorTEST.cpp appBenchmark/canonicalDS/bitVector.cpp -o appBenchmark/bin/bvTEST
 
 # Para Permutaciones
-> g++ -std=c++17 bitVectorTEST.cpp ../canonicalDS/bitVector.cpp -o ../bin/bvTEST
-
 Desde root
-> g++ -std=c++17 appBenchmark/test/bitVectorTEST.cpp appBenchmark/canonicalDS/bitVector.cpp appBenchmark/canonicalDS/permutation.cpp -o appBenchmark/bin/bvTEST
+> g++ -std=c++17 appBenchmark/test/permutationTEST.cpp appBenchmark/canonicalDS/permutation.cpp appBenchmark/canonicalDS/bitVector.cpp -o appBenchmark/bin/pmTEST
+
+# Para Secuencias
+Desde root
+> g++ -std=c++17 appBenchmark/test/sequenceTEST.cpp appBenchmark/canonicalDS/Sequence.cpp appBenchmark/canonicalDS/permutation.cpp appBenchmark/canonicalDS/bitVector.cpp -o appBenchmark/bin/sqTEST
 
 
 
