@@ -49,15 +49,7 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
 
 int Permutation::access(int index) {
     if (index < 0 || index >= size) return -1;
-    if (B.access(index)) {
-        return S[B.rank1(index)];
-    } else {
-        int j = index;
-        while (!B.access(j)) {
-            j = this->pi[j];
-        }
-        return S[B.rank1(j)];
-    }
+    return this->pi[index];
 }
 
 int Permutation::inverse(int index) {
