@@ -15,52 +15,76 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
         return;
     }
     std::vector<int> S;
+    S.reserve(E);
     std::string sEdge;
     std::vector<int> degree(N, 0);
-    while(std::getline(inputFile, sEdge)){
-        int u, v;
-        std::istringstream iss(sEdge);
-        if(!(iss >> u >> v)) continue;
+    int u, v;
+    while(inputFile >> u >> v){
         if(u < 0 || u >= N || v < 0 || v >= N) continue;
-
-        edgeIndex.insert(encodeEdge(u, v));
         S.push_back(v);
         degree[u]++;
     }
+    const int actualEdges = static_cast<int>(S.size());
     this->N = Sequence(S, N);
-    this->B = bitVector(N + E - 1);
-    for(int i=0; i<(int)S.size(); i+=1){
-        this->B.setBit(S[i]);
-        for(int j=0; j<degree[S[i]]; j++){
-            this->B.clearBit(S[i] + j);
+    this->B = bitVector(actualEdges + N);
+
+    int index = 0;
+    for(int node=0; node < N; node+=1){
+        this->B.setBit(index);
+        int d = degree[node];
+        for(int j=1; j<=d; j++){
+            this->B.clearBit(index + j);
         }
+        index += d + 1;
     }
+    this->B.finishSetUp();
     this->numNodes = N;
-    this->numEdges = E;
+    this->numEdges = actualEdges;
 }
 
 bool GraphSequence::adj(int v, int u){
     if (v < 0 || v >= this->numNodes || u < 0 || u >= this->numNodes) {
         return false;
     }
-    return edgeIndex.find(encodeEdge(v, u)) != edgeIndex.end();
+
+    const int start = this->B.select1(v + 1) - (v + 1);
+    const int end = this->B.select1(v + 2) - (v + 2);
+    return (this->N.rank(u, end) - this->N.rank(u, start)) == 1;
 }
 
 int GraphSequence::inDegree(int v){
+    if (v < 0 || v >= this->numNodes) return -1;
     return this->N.rank(v, this->numEdges);
 }
 
 int GraphSequence::outDegree(int v){
-    int b = this->B.select1(v);
-    return this->B.succ1(b+1) - b - 1;
+    if (v < 0 || v >= this->numNodes) return -1;
+
+    const int start = this->B.select1(v + 1);
+    const int next = this->B.select1(v + 2);
+    return next - start - 1;
 }
 
 int GraphSequence::neigh(int v, int j){
-    return this->N.access(this->B.select1(v) - v + j);
+    if (v < 0 || v >= this->numNodes || j < 0) return -1;
+    const int deg = this->outDegree(v);
+    if (j >= deg) return -1;
+
+    const int start = this->B.select1(v + 1);
+    const int p = start - (v + 1) + j;
+    return this->N.access(p);
 }
 
 int GraphSequence::rneigh(int v, int j){
-    return this->B.select0(this->N.select(v, j) + v) - this->N.select(v, j);
+    if (v < 0 || v >= this->numNodes || j < 0) return -1;
+    const int indeg = this->inDegree(v);
+    if (j >= indeg) return -1;
+
+    // Sequence::select uses 1-based rank argument; this API exposes j as 0-based.
+    const int p = this->N.select(v, j + 1);
+    if (p < 0 || p >= this->numEdges) return -1;
+
+    return this->B.select0(p + 1) - p - 1;
 }
 
 int GraphSequence::size(){

@@ -20,8 +20,6 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
                 j = pi[j];
                 k++;
             }
-            // Every cycle needs at least one marked anchor, otherwise access()/inverse()
-            // would loop forever on cycles shorter than t (no k % t == 0 hit occurs).
             B.setBit(i);
         }
     }

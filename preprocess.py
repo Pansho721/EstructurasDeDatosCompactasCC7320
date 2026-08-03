@@ -2,6 +2,7 @@ import collections
 import csv
 import sys
 import os
+import tempfile
 
 def tsv2file(input, output, sep='\t', head=10, cols=None, count=False):
     os.makedirs(os.path.dirname(output), exist_ok=True) if os.path.dirname(output) else None
@@ -107,6 +108,9 @@ def relabel_edgelist_to_numeric(
     mapping_path="graphs/reddit_node_mapping.tsv",
     sep='\t',
 ):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True) if os.path.dirname(output_path) else None
+    os.makedirs(os.path.dirname(mapping_path), exist_ok=True) if os.path.dirname(mapping_path) else None
+
     node_to_id = {}
     next_id = 0
     output_rows = []
@@ -135,12 +139,10 @@ def relabel_edgelist_to_numeric(
             src_id = get_id(src)
             dst_id = get_id(dst)
 
-            if len(parts) >= 3:
-                output_rows.append([src_id, dst_id, parts[2].strip()])
-            else:
-                output_rows.append([src_id, dst_id])
+            # Numeric edgelist should contain only numeric source and target IDs.
+            output_rows.append([src_id, dst_id])
 
-    output_rows.sort(key=lambda row: (row[0], row[1], row[2] if len(row) >= 3 else ''))
+    output_rows.sort(key=lambda row: (row[0], row[1]))
 
     with open(output_path, 'w', newline='', encoding='utf-8') as outf:
         writer = csv.writer(outf, delimiter=sep)
@@ -155,11 +157,16 @@ def relabel_edgelist_to_numeric(
 
 if __name__ == "__main__":
     input_file = "soc-redditHyperlinks-body.tsv"
-    weight_file = "graphs/reddit_weighted.edgelist"
-    aggregated_file = "graphs/reddit_weighted_aggregated.edgelist"
     numeric_file = "graphs/reddit_numeric.edgelist"
     mapping_file = "graphs/reddit_node_mapping.tsv"
 
-    directedWeightedGraphFile(input_file, weight_file)
-    map_reduce_count_edges(weight_file, aggregated_file, sep='\t')
-    relabel_edgelist_to_numeric(aggregated_file, numeric_file, mapping_file, sep='\t')
+    # Keep only numeric outputs in the repository; intermediates are temporary.
+    with tempfile.TemporaryDirectory() as tmpdir:
+        weight_file = os.path.join(tmpdir, "reddit_weighted.edgelist")
+        aggregated_file = os.path.join(tmpdir, "reddit_weighted_aggregated.edgelist")
+
+        directedWeightedGraphFile(input_file, weight_file)
+        map_reduce_count_edges(weight_file, aggregated_file, sep='\t')
+        relabel_edgelist_to_numeric(aggregated_file, numeric_file, mapping_file, sep='\t')
+
+    print(f"Wrote numeric edgelist: {numeric_file}")

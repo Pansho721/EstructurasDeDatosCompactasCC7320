@@ -6,8 +6,8 @@
 // These numbers are exclusive for the reddit hyperlinks body graph
 // Number of nodes in the graph
 // Number of edges in the graph
-int N = 35777;
-int E = 367662;
+int N = 35776;
+int E = 137821;
 
 BenchmarkDoc::BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt){
     name = n;
