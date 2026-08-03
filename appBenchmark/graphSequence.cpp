@@ -47,8 +47,8 @@ bool GraphSequence::adj(int v, int u){
         return false;
     }
 
-    const int start = this->B.select1(v + 1) - (v + 1);
-    const int end = this->B.select1(v + 2) - (v + 2);
+    const int start = this->B.select1(v + 1) - v;
+    const int end = this->B.select1(v + 2) - (v + 1);
     return (this->N.rank(u, end) - this->N.rank(u, start)) == 1;
 }
 
@@ -71,7 +71,7 @@ int GraphSequence::neigh(int v, int j){
     if (j >= deg) return -1;
 
     const int start = this->B.select1(v + 1);
-    const int p = start - (v + 1) + j;
+    const int p = start - v + j;
     return this->N.access(p);
 }
 
