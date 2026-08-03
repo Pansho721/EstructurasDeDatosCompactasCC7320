@@ -27,7 +27,7 @@ int main() {
     for (int j = 1; j <= 3; ++j) {
         std::cout << "select1(" << j << ") = " << bv.select1(j) << std::endl;
     }
-    std::cout << bv.select1(1000) << std::endl; // Test select1 with a rank greater than the number of 1s
+    std::cout << "selcet1(1000) = " << bv.select1(1000) << std::endl; // Test select1 with a rank greater than the number of 1s
 
     // Test rank0
     for (int i = 0; i < size; ++i) {

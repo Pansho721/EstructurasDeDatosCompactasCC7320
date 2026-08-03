@@ -97,7 +97,7 @@ int bitVector::select1(int rank){
         return (rank <= 0) ? 0 : 1;
     }
     if(rank < 0 || rank == 0) return 0;
-    if(rank > acc[this->size - 1]) return this->size + 1;
+    if(rank > acc[this->size - 1]) rank = acc[this->size-1];
     return bsrch(rank);
 }
 

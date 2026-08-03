@@ -15,8 +15,9 @@ class Sequence {
         std::vector<Permutation> pi; // permutation
     public:
         Sequence();
-        Sequence(std::vector<int> S, int sigma, int t = 4);
+        Sequence(std::vector<int> S, int sigma);
         int access(int index);
         int rank(int symbol, int index);
         int select(int symbol, int rank);
+        void seeA();
 };
