@@ -22,8 +22,7 @@ static std::string resolveGraphFile(const std::string& file){
 
 void adjTEST(graph& graph){
 
-    if (!graph.adj(0, 1)) std::cout << "Mismatch adjacency 1.1" << std::endl;
-    if (graph.adj(0, 10)) std::cout << "Mismatch adjacency 1.2" << std::endl;
+    if (!graph.adj(0, 1)) std::cout << "Mismatch adjacency 1" << std::endl;
     if (graph.adj(50, 50)) std::cout << "Mismatch adjacency 2" << std::endl;
     if (!graph.adj(90, 91)) std::cout << "Mismatch adjacency 3" << std::endl;
     if (graph.adj(119, 40)) std::cout << "Mismatch adjacency 4" << std::endl;
@@ -49,6 +48,8 @@ void rneighTEST(graph& graph){
     if (graph.rneigh(350, 20) != 173) std::cout << "Mismatch rneigh 6: " << graph.rneigh(350, 20) << std::endl;
     if (graph.rneigh(3, 0) != 2) std::cout << "Mismatch rneigh 7: " << graph.rneigh(3, 0) << std::endl;
     if (graph.rneigh(4, 0) != 13066) std::cout << "Mismatch rneigh 8: " << graph.rneigh(4, 0) << std::endl;
+    if (graph.rneigh(2907, 9) != 1598) std::cout << "Mismatch rneigh 9: " << graph.rneigh(2907, 9) << std::endl;
+    if (graph.rneigh(9095, 2) != 5291) std::cout << "Mismatch rneigh 10: " << graph.rneigh(9095, 2) << std::endl;
 }
 
 void outDegreeTEST(graph& graph){
@@ -56,7 +57,12 @@ void outDegreeTEST(graph& graph){
     if (graph.outDegree(1) != 1) std::cout << "Mismatch outDegree 2: " << graph.outDegree(1) << std::endl;
     if (graph.outDegree(2) != 1) std::cout << "Mismatch outDegree 3: " << graph.outDegree(2) << std::endl;
     if (graph.outDegree(3) != 65) std::cout << "Mismatch outDegree 4: " << graph.outDegree(3) << std::endl;
-    if (graph.outDegree(5) != 0) std::cout << "Mismatch outDegree 5: " << graph.outDegree(4) << std::endl;
+    if (graph.outDegree(5) != 0) std::cout << "Mismatch outDegree 5: " << graph.outDegree(5) << std::endl;
+    if (graph.outDegree(350) != 40) std::cout << "Mismatch outDegree 6: " << graph.outDegree(350) << std::endl;
+    if (graph.outDegree(900) != 11) std::cout << "Mismatch outDegree 7: " << graph.outDegree(900) << std::endl;
+    if (graph.outDegree(4877) != 1) std::cout << "Mismatch outDegree 8: " << graph.outDegree(4877) << std::endl;
+    if (graph.outDegree(7056) != 26) std::cout << "Mismatch outDegree 9: " << graph.outDegree(7056) << std::endl;
+    if (graph.outDegree(13200) != 1) std::cout << "Mismatch outDegree 10: " << graph.outDegree(13200) << std::endl;
 }
 
 void inDegreeTEST(graph& graph){
@@ -64,6 +70,12 @@ void inDegreeTEST(graph& graph){
     if (graph.inDegree(1) != 3) std::cout << "Mismatch inDegree 2: " << graph.inDegree(1) << std::endl;
     if (graph.inDegree(2) != 4) std::cout << "Mismatch inDegree 3: " << graph.inDegree(2) << std::endl;
     if (graph.inDegree(3) != 65) std::cout << "Mismatch inDegree 4: " << graph.inDegree(3) << std::endl;
+    if (graph.inDegree(5) != 1) std::cout << "Mismatch inDegree 5: " << graph.inDegree(5) << std::endl;
+    if (graph.inDegree(5359) != 11) std::cout << "Mismatch inDegree 6: " << graph.inDegree(5359) << std::endl;
+    if (graph.inDegree(6576) != 7) std::cout << "Mismatch inDegree 7: " << graph.inDegree(6576) << std::endl;
+    if (graph.inDegree(11683) != 10) std::cout << "Mismatch inDegree 8: " << graph.inDegree(11683) << std::endl;
+    if (graph.inDegree(15566) != 4) std::cout << "Mismatch inDegree 9: " << graph.inDegree(15566) << std::endl;
+    if (graph.inDegree(33666) != 1) std::cout << "Mismatch inDegree 10: " << graph.inDegree(33666) << std::endl;
 }
 
 BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
