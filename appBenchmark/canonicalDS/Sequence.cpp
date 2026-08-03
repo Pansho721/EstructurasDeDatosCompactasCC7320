@@ -1,6 +1,5 @@
 #include "Sequence.h"
 #include <cmath>
-#include <iostream>
 
 Sequence::Sequence() : n(0), sigma(0) {}
 
@@ -88,9 +87,7 @@ int Sequence::rank(int symbol, int index) {
     const int ip = pos0 - k * sigma;
     const int chunkLen = std::min((k + 1) * sigma, n) - k * sigma;
 
-    // sL/eL bound (0-based, half-open on the right via eL-1) the slice of pi[k] that
-    // corresponds to `symbol`'s list of positions within this chunk. D[k] is laid out as
-    // 1 0^|L0| 1 0^|L1| ... 1 0^|L_{sigma-1}| (a separator right before each list).
+    // Careful with 
     const int sL = this->D[k].select1(symbol + 1) - symbol;
     const int eL = (symbol == sigma - 1) ? chunkLen : (this->D[k].select1(symbol + 2) - (symbol + 1));
 
@@ -127,14 +124,4 @@ int Sequence::select(int symbol, int j) { // select_c(j) <--> select(c, j)
     const int offset = this->pi[chunkIdx].access(sL + jp - 1);
 
     return chunkIdx * sigma + offset;
-}
-
-void Sequence::seeA() {
-    std::cout << "sigma: " << this->sigma << std::endl;
-    for (int c=0;c<this->sigma;c++){
-        for (int i=0; i<this->A[c].length() ; i++){
-            std::cout << "c: " << c << " | i: " << i << " | access_c(i):" << this->A[c].access(i) << std::endl;
-        }
-        std::cout << "________________________" << std::endl;
-    }
 }

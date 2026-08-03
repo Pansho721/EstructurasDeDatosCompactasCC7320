@@ -1,7 +1,6 @@
 #include "graphSequence.h"
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 long long GraphSequence::encodeEdge(int from, int to) {
