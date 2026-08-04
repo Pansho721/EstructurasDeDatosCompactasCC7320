@@ -20,8 +20,6 @@ int main() {
             std::cout << "seq.rank(" << symbol << ", " << index << ") = " << seq.rank(symbol, index) << std::endl;
         }
     }
-
-    seq.seeA();
     
     // Test select
     for (int symbol = 0; symbol < sigma; ++symbol) {
