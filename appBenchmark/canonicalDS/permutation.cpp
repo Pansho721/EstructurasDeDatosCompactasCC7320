@@ -2,7 +2,7 @@
 
 Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
     B = bitVector(size);
-    V = bitVector(size);
+    bitVector V(size);
     for (int i = 0; i < size; ++i) {
         B.clearBit(i);
         V.clearBit(i);
