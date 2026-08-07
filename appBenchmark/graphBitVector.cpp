@@ -14,6 +14,7 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
         std::cerr << "Error opening file: " << file << std::endl;
         return;
     }
+    std::vector<int> nodes;
     nodes.resize(N);
     adjM.resize(N);
     for(int i=0; i<N; i++){
@@ -40,9 +41,13 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     }
 }
 
-int GraphBitVector::sizePerEdge(){
+float GraphBitVector::sizePerEdge(){
     int const numNodes = this->numNodes;
-    return (64 + this->nodes.size() + (this->adjM.size() * this->adjM[0].length())) / this->numEdges;
+    int bsize = 0;
+    for (int i = 0; i < numNodes; ++i) {
+        bsize += adjM[i].size_in_bytes();
+    }
+    return ((64 + bsize) / static_cast<float>(this->numEdges));
 }
 
 bool GraphBitVector::adj(int n, int m){

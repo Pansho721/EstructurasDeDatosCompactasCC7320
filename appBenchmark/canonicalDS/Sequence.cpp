@@ -126,6 +126,16 @@ int Sequence::select(int symbol, int j) { // select_c(j) <--> select(c, j)
     return chunkIdx * sigma + offset;
 }
 
-int Sequence::size() {
-    return n;
+int Sequence::size_in_bytes() {
+    int bsize = 0;
+    for (int i=0; i < sigma; ++i) {
+        if (this->A[i].length() > 0) {
+            bsize += this->A[i].size_in_bytes();
+        }
+    }
+    int k = this->D.size();
+    for (int i=0; i < k; ++i) {
+        bsize += this->D[i].size_in_bytes() + this->pi[i].size_in_bytes();
+    }
+    return bsize;
 }

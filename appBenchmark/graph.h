@@ -13,8 +13,9 @@ class BenchmarkDoc {
         float rneighTime;
         float outDegreeTime;
         float inDegreeTime;
+        int sizePerEdge;
 
-        BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt);
+        BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt, int sizePerEdge);
         ~BenchmarkDoc();
         void print();
 };

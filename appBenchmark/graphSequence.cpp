@@ -84,7 +84,7 @@ int GraphSequence::rneigh(int v, int j){
     return this->B.select0(p + 1) - p - 1;
 }
 
-int GraphSequence::sizePerEdge(){
+float GraphSequence::sizePerEdge(){
     // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
-    return ((2 * 32 + this->N.size() + this->B.size()) / this->numEdges);
+    return ((2 * 32 + this->N.size_in_bytes() + this->B.size_in_bytes()) / static_cast<float>(this->numEdges));
 }

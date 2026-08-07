@@ -80,7 +80,7 @@ void inDegreeTEST(graph& graph){
 
 BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::cout << "GraphBitVector Benchmark" << std::endl;
-    BenchmarkDoc doc("GraphBitVector", 0.0, 0.0, 0.0, 0.0, 0.0);
+    BenchmarkDoc doc("GraphBitVector", 0.0, 0.0, 0.0, 0.0, 0.0, 0);
 
 
     // =========================
@@ -93,6 +93,7 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
     doc.ConstructionTime = constructionDuration.count();
 
+    doc.sizePerEdge = graphBitVector.sizePerEdge();
 
     // =========================
     // Benchmark adjacency check
@@ -140,7 +141,7 @@ BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
 
 BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     std::cout << "GraphSequence Benchmark" << std::endl;
-    BenchmarkDoc doc("GraphSequence", 0.0, 0.0, 0.0, 0.0, 0.0);
+    BenchmarkDoc doc("GraphSequence", 0.0, 0.0, 0.0, 0.0, 0.0, 0);
 
 
     // =========================
@@ -152,6 +153,8 @@ BenchmarkDoc runGraphSequenceBenchmark(std::string file){
     auto endConstructionTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
     doc.ConstructionTime = constructionDuration.count();
+
+    doc.sizePerEdge = graphSequence.sizePerEdge();
 
     // =========================
     // Benchmark adjacency check

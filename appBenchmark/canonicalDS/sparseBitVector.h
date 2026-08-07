@@ -27,7 +27,7 @@ class sparseBitVector {
         int select1(int rank);
         int select0(int rank);
         int length();
-        int size();
+        int size_in_bytes();
         int pred0(int index);
         int pred1(int index);
         int succ0(int index);

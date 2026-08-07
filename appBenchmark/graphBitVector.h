@@ -13,7 +13,6 @@ class GraphBitVector : public graph {
     private:
         int numNodes;
         int numEdges;
-        std::vector<int> nodes;
         std::vector<sparseBitVector> adjM;
 
         void addEdge(std::pair<int, int> edge);
@@ -21,7 +20,7 @@ class GraphBitVector : public graph {
     public:
         GraphBitVector(std::string file, int N, int E);
 
-        int sizePerEdge();
+        float sizePerEdge();
         bool adj(int n, int m) override;
         int neigh(int n, int j) override;
         int outDegree(int n) override;

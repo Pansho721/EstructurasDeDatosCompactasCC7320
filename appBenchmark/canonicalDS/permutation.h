@@ -14,5 +14,5 @@ class Permutation {
         Permutation(std::vector<int> pi, int t);
         int access(int index);
         int inverse(int index);
-        int size();
+        int size_in_bytes();
 };

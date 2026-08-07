@@ -19,7 +19,7 @@ class GraphSequence : public graph {
     public:
         GraphSequence(std::string file, int N, int E);
 
-        int sizePerEdge();
+        float sizePerEdge();
         bool adj(int n, int m) override;
         int neigh(int n, int j) override;
         int rneigh(int n, int j) override;

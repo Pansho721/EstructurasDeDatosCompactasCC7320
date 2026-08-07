@@ -9,20 +9,24 @@
 int N = 35776;
 int E = 137821;
 
-BenchmarkDoc::BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt){
+BenchmarkDoc::BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt, int sPerEdge){
+    sizePerEdge = sPerEdge;
     name = n;
     ConstructionTime = constt;
     adjTime = adjt;
     rneighTime = rneight;
     outDegreeTime = outt;
     inDegreeTime = innt;
+    sPerEdge = sPerEdge;
 }
 
 BenchmarkDoc::~BenchmarkDoc(){}
 
 void BenchmarkDoc::print(){
     std::cout << std::fixed << std::setprecision(9);
-    std::cout << "===== BENCHMARK RESULTS: " << name << " =====" << std::endl;
+    std::cout << "\n===== BENCHMARK RESULTS: " << name << " =====" << std::endl;
+    std::cout << "Size per Edge: " << sizePerEdge << " bytes" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     std::cout << "Construction Time: " << ConstructionTime << std::endl;
     std::cout << "Adjacency Time: " << adjTime << std::endl;
     std::cout << "Reverse Neighbors Time: " << rneighTime << std::endl;
