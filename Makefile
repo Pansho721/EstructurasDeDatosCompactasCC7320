@@ -1,6 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++17
-OMPFLAGS := -fopenmp
+CXXFLAGS := -std=c++17 -Wno-deprecated-declarations
 SDSL_DIR := external/sdsl-lite
 SDSL_INC := $(SDSL_DIR)/include
 SDSL_SRC := $(SDSL_DIR)/lib/bits.cpp $(SDSL_DIR)/lib/util.cpp $(SDSL_DIR)/lib/ram_fs.cpp $(SDSL_DIR)/lib/memory_management.cpp
@@ -18,19 +17,19 @@ BV_BIN := $(BIN_DIR)/bvTEST
 PM_BIN := $(BIN_DIR)/pmTEST
 SQ_BIN := $(BIN_DIR)/sqTEST
 BENCH_BIN := $(BIN_DIR)/benchmark_bin
-BENCH_OMP_BIN := $(BIN_DIR)/benchmark_omp_bin
+TESTT_BIN := $(BIN_DIR)/testT
 
-.PHONY: all benchmark benchmarkomp test bv pm sq clean
+.PHONY: all benchmark test bv pm sq testT clean
 
 all: benchmark
 
 benchmark: $(BENCH_BIN)
 	./$(BENCH_BIN) $(GRAPH_FILE)
 
-benchmarkomp: $(BENCH_OMP_BIN)
-	./$(BENCH_OMP_BIN) $(GRAPH_FILE)
-
 test: bv pm sq
+
+testT: $(TESTT_BIN)
+	./$(TESTT_BIN)
 
 bv: $(BV_BIN)
 	./$(BV_BIN)
@@ -44,7 +43,7 @@ sq: $(SQ_BIN)
 $(BV_BIN): $(TEST_DIR)/bitVectorTEST.cpp $(DS_DIR)/bitVector.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(PM_BIN): $(TEST_DIR)/permutationTEST.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp
+$(PM_BIN): $(TEST_DIR)/permutationTEST.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(SQ_BIN): $(TEST_DIR)/sequenceTEST.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
@@ -53,8 +52,8 @@ $(SQ_BIN): $(TEST_DIR)/sequenceTEST.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permuta
 $(BENCH_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(BENCH_OMP_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
-	$(CXX) $(CXXFLAGS) $(OMPFLAGS) $^ -o $@
+$(TESTT_BIN): $(APP_DIR)/benchmark-heuristic.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 clean:
-	rm -f $(BV_BIN) $(PM_BIN) $(SQ_BIN) $(BENCH_BIN) $(BENCH_OMP_BIN)
+	rm -f $(BV_BIN) $(PM_BIN) $(SQ_BIN) $(BENCH_BIN) $(TESTT_BIN)

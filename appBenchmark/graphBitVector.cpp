@@ -40,9 +40,9 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     }
 }
 
-int GraphBitVector::size(){
+int GraphBitVector::sizePerEdge(){
     int const numNodes = this->numNodes;
-    return 64 + numNodes + numNodes * std::log(numNodes);
+    return (64 + this->nodes.size() + (this->adjM.size() * this->adjM[0].length())) / this->numEdges;
 }
 
 bool GraphBitVector::adj(int n, int m){

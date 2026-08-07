@@ -7,7 +7,7 @@
 
 class sparseBitVector {
     private:
-        int size;
+        int n;
         bool finalized;
         sdsl::bit_vector pendingBits;
         sdsl::sd_vector<> bits;
@@ -27,6 +27,7 @@ class sparseBitVector {
         int select1(int rank);
         int select0(int rank);
         int length();
+        int size();
         int pred0(int index);
         int pred1(int index);
         int succ0(int index);

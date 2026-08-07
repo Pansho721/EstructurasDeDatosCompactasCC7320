@@ -19,5 +19,5 @@ class Sequence {
         int access(int index);
         int rank(int symbol, int index);
         int select(int symbol, int rank);
-        void seeA();
+        int size();
 };

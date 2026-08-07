@@ -13,7 +13,6 @@ This project is managed through the Makefile. You do not need to compile files m
 
 - g++ with C++17 support
 - make
-- OpenMP support in your compiler if you want the parallel benchmark target
 - The SDSL library is included as the `external/sdsl-lite` git submodule
 
 ### 2. Quick Start
@@ -25,7 +24,7 @@ git submodule update --init --recursive
 make
 ```
 
-By default, this runs the benchmark without OpenMP.
+By default, this runs the benchmark.
 
 ### 3. Main Targets
 
@@ -33,12 +32,6 @@ Run benchmark (default target):
 
 ```bash
 make benchmark
-```
-
-Run benchmark with OpenMP:
-
-```bash
-make benchmarkomp
 ```
 
 Run all tests:
@@ -73,7 +66,6 @@ You can override it at runtime:
 
 ```bash
 make benchmark GRAPH_FILE=graphs/reddit_numeric.edgelist
-make benchmarkomp GRAPH_FILE=graphs/reddit_numeric.edgelist
 ```
 
 ### 5. Recommended Workflow
@@ -96,14 +88,7 @@ make test
 make benchmark
 ```
 
-4. Compare with OpenMP:
-
-```bash
-make benchmarkomp
-```
-
 ### 6. Common Notes
 
 - Use `make` for the default benchmark run.
-- Use `make benchmarkomp` only when you want OpenMP enabled.
 - If you see stale behavior after code changes, run `make clean` and then re-run your target.

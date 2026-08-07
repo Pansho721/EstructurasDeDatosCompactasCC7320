@@ -125,3 +125,7 @@ int Sequence::select(int symbol, int j) { // select_c(j) <--> select(c, j)
 
     return chunkIdx * sigma + offset;
 }
+
+int Sequence::size() {
+    return n;
+}

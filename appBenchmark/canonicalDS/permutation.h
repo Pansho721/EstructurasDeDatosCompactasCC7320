@@ -1,17 +1,18 @@
 #pragma once
 #include <vector>
-#include "bitVector.h"
+#include "sparseBitVector.h"
 
 
 class Permutation {
     private:
-        int size;
+        int n;
         std::vector<int> pi;
         std::vector<int> S;
-        bitVector B;
+        sparseBitVector B;
 
     public:
         Permutation(std::vector<int> pi, int t);
         int access(int index);
         int inverse(int index);
+        int size();
 };

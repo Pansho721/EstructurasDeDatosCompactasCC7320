@@ -4,9 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-long long GraphSequence::encodeEdge(int from, int to) {
-    return (static_cast<long long>(from) << 32) | static_cast<unsigned int>(to);
-}
 
 GraphSequence::GraphSequence(std::string file, int N, int E){
     std::ifstream inputFile(file);
@@ -87,7 +84,7 @@ int GraphSequence::rneigh(int v, int j){
     return this->B.select0(p + 1) - p - 1;
 }
 
-int GraphSequence::size(){
+int GraphSequence::sizePerEdge(){
     // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
-    return 2 * 32 + this->numEdges * 32 + this->numNodes + this->numEdges;
+    return ((2 * 32 + this->N.size() + this->B.size()) / this->numEdges);
 }

@@ -15,14 +15,11 @@ class GraphSequence : public graph {
         int numEdges;
         Sequence N;
         sparseBitVector B;
-        std::unordered_set<long long> edgeIndex;
-
-        static long long encodeEdge(int from, int to);
 
     public:
         GraphSequence(std::string file, int N, int E);
 
-        int size();
+        int sizePerEdge();
         bool adj(int n, int m) override;
         int neigh(int n, int j) override;
         int rneigh(int n, int j) override;

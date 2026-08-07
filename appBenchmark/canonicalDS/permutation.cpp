@@ -1,13 +1,13 @@
 #include "permutation.h"
 
-Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
-    B = bitVector(size);
-    bitVector V(size);
-    for (int i = 0; i < size; ++i) {
+Permutation::Permutation(std::vector<int> pi, int t) : n(pi.size()), pi(pi) {
+    B = sparseBitVector(this->n);
+    sparseBitVector V(this->n);
+    for (int i = 0; i < this->n; ++i) {
         B.clearBit(i);
         V.clearBit(i);
     }
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < this->n; ++i) {
         if (not V.access(i)) {
             V.setBit(i);
             int j = pi[i];
@@ -25,8 +25,8 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
     }
     B.finishSetUp();
 
-    std::vector<int> S(B.rank1(size - 1) + 1);
-    for (int i = 0; i < size; ++i) {
+    std::vector<int> S(B.rank1(this->n - 1) + 1);
+    for (int i = 0; i < this->n; ++i) {
         if (B.access(i)) {
             V.clearBit(i);
             int j = pi[i];
@@ -46,12 +46,12 @@ Permutation::Permutation(std::vector<int> pi, int t) : size(pi.size()), pi(pi) {
 }
 
 int Permutation::access(int index) {
-    if (index < 0 || index >= size) return -1;
+    if (index < 0 || index >= this->n) return -1;
     return this->pi[index];
 }
 
 int Permutation::inverse(int index) {
-    if (index < 0 || index >= size) return -1;
+    if (index < 0 || index >= this->n) return -1;
     int j = index;
     bool s = true;
     while (this->pi[j] != index) {
@@ -63,4 +63,8 @@ int Permutation::inverse(int index) {
         }
     }
     return j;
+}
+
+int Permutation::size() {
+    return this->B.size() + this->pi.size() * 32 + this->S.size() * 32;
 }
