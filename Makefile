@@ -1,6 +1,11 @@
 CXX := g++
 CXXFLAGS := -std=c++17
 OMPFLAGS := -fopenmp
+SDSL_DIR := external/sdsl-lite
+SDSL_INC := $(SDSL_DIR)/include
+SDSL_SRC := $(SDSL_DIR)/lib/bits.cpp $(SDSL_DIR)/lib/util.cpp $(SDSL_DIR)/lib/ram_fs.cpp $(SDSL_DIR)/lib/memory_management.cpp
+
+CXXFLAGS += -I$(SDSL_INC)
 
 BIN_DIR := appBenchmark/bin
 TEST_DIR := appBenchmark/test
@@ -42,13 +47,13 @@ $(BV_BIN): $(TEST_DIR)/bitVectorTEST.cpp $(DS_DIR)/bitVector.cpp
 $(PM_BIN): $(TEST_DIR)/permutationTEST.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(SQ_BIN): $(TEST_DIR)/sequenceTEST.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp
+$(SQ_BIN): $(TEST_DIR)/sequenceTEST.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(BENCH_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp
+$(BENCH_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(BENCH_OMP_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp
+$(BENCH_OMP_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/bitVector.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $(OMPFLAGS) $^ -o $@
 
 clean:

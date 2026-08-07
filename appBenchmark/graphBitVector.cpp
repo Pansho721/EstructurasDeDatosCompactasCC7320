@@ -18,7 +18,7 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     adjM.resize(N);
     for(int i=0; i<N; i++){
         nodes[i] = i;
-        adjM[i] = bitVector(N);
+        adjM[i] = sparseBitVector(N);
     }
     std::string sEdge;
     while(std::getline(inputFile, sEdge)){

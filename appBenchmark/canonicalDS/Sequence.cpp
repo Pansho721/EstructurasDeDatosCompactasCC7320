@@ -7,13 +7,13 @@ Sequence::Sequence(std::vector<int> S, int sigma) : n(S.size()), sigma(sigma) {
     std::vector<int> F(sigma + 1, 0);//F[0,sigma]
     const int block = std::ceil(static_cast<double>(this->n) / sigma);
     const int n = this->n;
-    std::vector<bitVector> Ac;
+    std::vector<sparseBitVector> Ac;
 
     for (int i = 0; i < n; ++i) {
         F[S[i]] = F[S[i]] + 1;
     }
     for (int c = 0; c < sigma; c++) {
-        Ac.push_back(bitVector(F[c] + block - 1));
+        Ac.push_back(sparseBitVector(F[c] + block - 1));
         F[c] = 0;
     }
     for (int k = 0; k < block; ++k) {
@@ -33,7 +33,7 @@ Sequence::Sequence(std::vector<int> S, int sigma) : n(S.size()), sigma(sigma) {
     this->A = Ac;
 
     std::vector<Permutation> pi;
-    std::vector<bitVector> Dk;
+    std::vector<sparseBitVector> Dk;
 
     for (int k = 0; k < block; ++k) {
         int minkn = std::min((k + 1) * sigma, n);
@@ -44,7 +44,7 @@ Sequence::Sequence(std::vector<int> S, int sigma) : n(S.size()), sigma(sigma) {
         }
         int l = minkn - ksigma;
         std::vector<int> pik(l);
-        bitVector Dkk(l + sigma);
+        sparseBitVector Dkk(l + sigma);
         for (int i = ksigma; i < minkn; ++i) {
             F[S[i] + 1] = F[S[i] + 1] + 1;
         }
@@ -111,7 +111,7 @@ int Sequence::select(int symbol, int j) { // select_c(j) <--> select(c, j)
     if (symbol < 0 || symbol >= sigma) return -1;
     if (j <= 0) return 0;
 
-    bitVector &Ac = this->A[symbol];
+    sparseBitVector &Ac = this->A[symbol];
     const int totalCount = (Ac.length() > 0) ? Ac.rank1(Ac.length() - 1) : 0;
     if (j > totalCount) return n + 1;
 

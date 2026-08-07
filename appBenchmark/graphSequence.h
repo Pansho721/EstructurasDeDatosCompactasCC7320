@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "graph.h"
-#include "canonicalDS/bitVector.h"
+#include "canonicalDS/sparseBitVector.h"
 #include "canonicalDS/Sequence.h"
 
 class GraphSequence : public graph {
@@ -14,7 +14,7 @@ class GraphSequence : public graph {
         int numNodes;
         int numEdges;
         Sequence N;
-        bitVector B;
+        sparseBitVector B;
         std::unordered_set<long long> edgeIndex;
 
         static long long encodeEdge(int from, int to);

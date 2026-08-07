@@ -7,14 +7,14 @@
 #include <string>
 
 #include "graph.h"
-#include "canonicalDS/bitVector.h"
+#include "canonicalDS/sparseBitVector.h"
 
 class GraphBitVector : public graph {
     private:
         int numNodes;
         int numEdges;
         std::vector<int> nodes;
-        std::vector<bitVector> adjM;
+        std::vector<sparseBitVector> adjM;
 
         void addEdge(std::pair<int, int> edge);
 

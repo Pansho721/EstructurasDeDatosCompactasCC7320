@@ -14,12 +14,14 @@ This project is managed through the Makefile. You do not need to compile files m
 - g++ with C++17 support
 - make
 - OpenMP support in your compiler if you want the parallel benchmark target
+- The SDSL library is included as the `external/sdsl-lite` git submodule
 
 ### 2. Quick Start
 
 From the repository root:
 
 ```bash
+git submodule update --init --recursive
 make
 ```
 

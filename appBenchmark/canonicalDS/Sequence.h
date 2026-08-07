@@ -3,15 +3,15 @@
 #include <string>
 #include <vector>
 
-#include "bitVector.h"
 #include "permutation.h"
+#include "sparseBitVector.h"
 
 class Sequence {
     private:
         int n;
         int sigma;
-        std::vector<bitVector> A; //Sigma
-        std::vector<bitVector> D;
+        std::vector<sparseBitVector> A; //Sigma
+        std::vector<sparseBitVector> D;
         std::vector<Permutation> pi; // permutation
     public:
         Sequence();

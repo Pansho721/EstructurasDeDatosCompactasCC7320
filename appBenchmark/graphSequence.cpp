@@ -26,7 +26,7 @@ GraphSequence::GraphSequence(std::string file, int N, int E){
     }
     const int actualEdges = static_cast<int>(S.size());
     this->N = Sequence(S, N);
-    this->B = bitVector(actualEdges + N);
+    this->B = sparseBitVector(actualEdges + N);
 
     int index = 0;
     for(int node=0; node < N; node+=1){
