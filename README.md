@@ -48,6 +48,12 @@ make pm
 make sq
 ```
 
+Run analisis for t parameter on sequences
+
+```bash
+make testT
+```
+
 Clean generated binaries:
 
 ```bash
@@ -82,7 +88,19 @@ python preprocess.py
 make test
 ```
 
-3. Run benchmark:
+3. Run the sequence analysis for parameter t
+
+```bash
+make testT
+```
+
+4. Generate the graphics for the secuence analysis
+
+```bash
+python plot.py appBenchmark/results/permutation_results.csv
+```
+
+5. Run benchmark:
 
 ```bash
 make benchmark
