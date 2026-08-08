@@ -87,7 +87,6 @@ int Sequence::rank(int symbol, int index) {
     const int ip = pos0 - k * sigma;
     const int chunkLen = std::min((k + 1) * sigma, n) - k * sigma;
 
-    // Careful with 
     const int sL = this->D[k].select1(symbol + 1) - symbol;
     const int eL = (symbol == sigma - 1) ? chunkLen : (this->D[k].select1(symbol + 2) - (symbol + 1));
 
