@@ -132,3 +132,13 @@ graphs/
 # Binary files
 benchmark_bin
 appBenchmark/bin/*
+
+# csv
+*.csv
+appBenchmark/results/*.csv
+appBenchmark/results/*
+
+# images
+inverse_time.png
+size_per_edge.png
+time_per_edge.png

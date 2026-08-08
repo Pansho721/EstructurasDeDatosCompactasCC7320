@@ -1,34 +1,89 @@
+#include <filesystem>
+#include <algorithm>
 #include <iostream>
+#include <numeric>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <random>
 #include <chrono>
 #include <ctime>
+#include <cmath>
+namespace fs = std::filesystem;
 
 #include "canonicalDS/permutation.h"
 
 void permutation_t(int E){
     std::vector<int> S;
-    for (int i = 0; i < E; ++i) {
-        S.push_back(i % 23451);//random number, just to test
+    S.resize(E);
+    std::iota(S.begin(), S.end(), 0);
+
+    // 2. Initialize a high-quality random number engine
+    std::random_device rd; 
+    std::mt19937 g(rd()); // Mersenne Twister engine
+
+    // 3. Permute the elements randomly
+    std::shuffle(S.begin(), S.end(), g);
+
+    fs::create_directories("appBenchmark/results");
+    std::ofstream csvFile("appBenchmark/results/permutation_results.csv");
+    if (!csvFile.is_open()) {
+        std::cerr << "Error: could not open CSV file for writing." << std::endl;
+        return;
     }
 
+    int opt = std::ceil(std::log2(E));
+    std::cout << " [*log2(E)*], " << opt << std::endl;
 
-    for (int t = 1; t <= 2; ++t) {
+    std::string header = "t, size, size per element, Construction Time, Access Time, Inverse Time";
+    csvFile << header << "\n";
+    std::cout << " [*t*], [*size*], [*size per element*], [*Construction Time*], [*Access Time*], [* Inverse Time*], " << std::endl;
+
+    for (int t = 1; t <= 2*opt; ++t) {
         auto start = std::chrono::high_resolution_clock::now();
         Permutation perm(S, t);
         auto end = std::chrono::high_resolution_clock::now();
+        float constructionTime = std::chrono::duration<float>(end - start).count();
 
-        std::chrono::duration<float> duration = end - start;
-        std::cout << "Permutation construction time for t=" << t << ": " << duration.count() << " seconds" << std::endl;
+        // Test access
+        auto accessStart = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < E; ++i) {
+            //std::cout << "perm.access(" << i << ") = " << perm.access(i) << std::endl;
+            perm.access(i);
+        }
+        auto accessEnd = std::chrono::high_resolution_clock::now();
+        float accessTime = std::chrono::duration<float>(accessEnd - accessStart).count();
+
+        // Test inverse
+        auto inverseStart = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < E; ++i) {
+            perm.inverse(i);
+        }
+        auto inverseEnd = std::chrono::high_resolution_clock::now();
+        float inverseTime = std::chrono::duration<float>(inverseEnd - inverseStart).count();
+
+        int sizeInBytes = perm.size_in_bytes();
+        int sizePerElement = sizeInBytes / E;
+
+        std::cout << '[' << t << "], " << '[' << sizeInBytes << "], " << '[' << sizePerElement << "], " << '[' << constructionTime << "], "<< '[' << accessTime << "], "<< '[' << inverseTime << "], " << std::endl;
+        csvFile << t << ", "
+                 << sizeInBytes << ", "
+                 << sizePerElement << ", "
+                 << constructionTime << ", "
+                 << accessTime << ", "
+                 << inverseTime << ", "
+                 << "\n";
     }
+    csvFile.close();
+    std::cout << "Results saved to permutation_results.csv" << std::endl;
+
 }
 
 
 int main(){
     
-    int E = 100000; // Number of edges (or size of the permutation)
+    int N = 35776; // Number of nodes (or size of the permutation)
 
-    permutation_t(E);
+    permutation_t(N);
     return 0;
 }
