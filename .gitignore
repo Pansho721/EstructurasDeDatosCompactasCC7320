@@ -139,6 +139,7 @@ appBenchmark/results/*.csv
 appBenchmark/results/*
 
 # images
-inverse_time.png
-size_per_edge.png
-time_per_edge.png
+inverse_time_vs_t.png
+inverse_time_vs_tbig.png
+size_vs_t.png
+time_vs_t.png

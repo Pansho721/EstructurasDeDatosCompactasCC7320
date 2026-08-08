@@ -1,21 +1,45 @@
 #!/usr/bin/env python3
 """
 Grafica los resultados de permutation_results.csv:
-  1) Tiempos (Construction, Access, Inverse) en función de t
-  2) Tamaños (size, size per element) en función de t
+  1) Construction Time y Access Time en función de t
+  2) Inverse Time en función de t
+  3) Tamaños (size, size per element) en función de t
 
 Uso:
-    python plot_permutation_results.py [ruta_al_csv] [--out-dir CARPETA]
+    python plot_permutation_results.py [ruta_al_csv] [--out-dir CARPETA] [--N N]
 
 Si no se especifica ruta, busca "permutation_results.csv" en el directorio actual.
+Si se especifica --N, se dibuja una línea vertical en x = log2(N) en cada gráfico.
 """
 
 import argparse
+import math
 import sys
 from pathlib import Path
 
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
+def add_log_line(ax, N: float, y_pos: str = "top"):
+    """Dibuja una línea vertical punteada en x = log2(N), con etiqueta."""
+    x_val = math.log2(N)
+    ax.axvline(x_val, color="black", linestyle="--", linewidth=1.2, alpha=0.7)
+
+    ylim = ax.get_ylim()
+    y_text = ylim[1] * 0.97 if y_pos == "top" else ylim[0] + (ylim[1] - ylim[0]) * 0.03
+    va = "top" if y_pos == "top" else "bottom"
+
+    ax.text(
+        x_val,
+        y_text,
+        f"  log2(N)={x_val:.2f}",
+        rotation=90,
+        va=va,
+        ha="left",
+        fontsize=8,
+        color="black",
+    )
 
 
 def load_csv(path: Path) -> pd.DataFrame:
@@ -65,7 +89,7 @@ def load_csv(path: Path) -> pd.DataFrame:
     return df
 
 
-def plot_times(df: pd.DataFrame, out_dir: Path):
+def plot_times(df: pd.DataFrame, out_dir: Path, N: float = None):
     df = df.sort_values("t")
     fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -75,18 +99,22 @@ def plot_times(df: pd.DataFrame, out_dir: Path):
     ax.set_xlabel("t")
     ax.set_ylabel("Tiempo (s)")
     ax.set_title("Tiempos vs t")
-    ax.legend()
     ax.grid(True, linestyle="--", alpha=0.5)
     ax.set_xlim(df["t"].min(), df["t"].max())
     ax.xaxis.set_inverted(False)
 
+    if N is not None and N > 0:
+        add_log_line(ax, N)
+
+    ax.legend()
     fig.tight_layout()
     out_path = out_dir / "times_vs_t.png"
     fig.savefig(out_path, dpi=150)
     print(f"Guardado: {out_path}")
     plt.close(fig)
 
-def plot_inverse_time(df: pd.DataFrame, out_dir: Path):
+
+def plot_inverse_time(df: pd.DataFrame, out_dir: Path, N: float = None):
     df = df.sort_values("t")
     fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -95,11 +123,14 @@ def plot_inverse_time(df: pd.DataFrame, out_dir: Path):
     ax.set_xlabel("t")
     ax.set_ylabel("Tiempo (s)")
     ax.set_title("Tiempos vs t")
-    ax.legend()
     ax.grid(True, linestyle="--", alpha=0.5)
     ax.set_xlim(df["t"].min(), df["t"].max())
     ax.xaxis.set_inverted(False)
 
+    if N is not None and N > 0:
+        add_log_line(ax, N)
+
+    ax.legend()
     fig.tight_layout()
     out_path = out_dir / "inverse_time_vs_t.png"
     fig.savefig(out_path, dpi=150)
@@ -107,7 +138,7 @@ def plot_inverse_time(df: pd.DataFrame, out_dir: Path):
     plt.close(fig)
 
 
-def plot_sizes(df: pd.DataFrame, out_dir: Path):
+def plot_sizes(df: pd.DataFrame, out_dir: Path, N: float = None):
     df = df.sort_values("t")
     fig, ax1 = plt.subplots(figsize=(8, 5))
 
@@ -127,6 +158,9 @@ def plot_sizes(df: pd.DataFrame, out_dir: Path):
     ax2.tick_params(axis="y", labelcolor=color2)
 
     fig.suptitle("Tamaños vs t")
+
+    if N is not None and N > 0:
+        add_log_line(ax1, N)
 
     # Leyenda combinada de ambos ejes
     lines1, labels1 = ax1.get_legend_handles_labels()
@@ -153,6 +187,12 @@ def main():
         default=".",
         help="Carpeta donde guardar los gráficos (default: directorio actual)",
     )
+    parser.add_argument(
+        "--N",
+        type=float,
+        default=None,
+        help="Si se especifica, dibuja una línea vertical en x = log2(N) en cada gráfico",
+    )
     args = parser.parse_args()
 
     csv_path = Path(args.csv_path)
@@ -172,9 +212,9 @@ def main():
         print(f"Columnas encontradas: {list(df.columns)}", file=sys.stderr)
         sys.exit(1)
 
-    plot_times(df, out_dir)
-    plot_inverse_time(df, out_dir)
-    plot_sizes(df, out_dir)
+    plot_times(df, out_dir, N=args.N)
+    plot_inverse_time(df, out_dir, N=args.N)
+    plot_sizes(df, out_dir, N=args.N)
 
 
 if __name__ == "__main__":

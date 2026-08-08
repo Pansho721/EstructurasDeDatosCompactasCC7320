@@ -15,4 +15,5 @@ class Permutation {
         int access(int index);
         int inverse(int index);
         int size_in_bytes();
+        int inverse_steps(int index);
 };

@@ -68,3 +68,21 @@ int Permutation::inverse(int index) {
 int Permutation::size_in_bytes() {
     return this->B.size_in_bytes() + this->pi.size() * 4 + this->S.size() * 4;
 }
+
+
+
+
+int Permutation::inverse_steps(int index) {  // versión de debug
+    int j = index, steps = 0;
+    bool s = true;
+    while (this->pi[j] != index) {
+        if (s && B.access(j)) {
+            j = S[B.rank1(j)];
+            s = false;
+        } else {
+            j = this->pi[j];
+        }
+        steps++;
+    }
+    return steps;
+}
