@@ -26,7 +26,7 @@ BenchmarkDoc::~BenchmarkDoc(){}
 void BenchmarkDoc::print(){
     std::cout << std::fixed << std::setprecision(9);
     std::cout << "\n===== BENCHMARK RESULTS: " << name << " =====" << std::endl;
-    std::cout << "Size per Edge: " << sizePerEdge << " bytes" << std::endl;
+    std::cout << "Size per Edge: " << sizePerEdge << " bits" << std::endl;
     std::cout << "---------------------------------------------" << std::endl;
     std::cout << "Construction Time: " << ConstructionTime << std::endl;
     std::cout << "Adjacency Time: " << adjTime << std::endl;

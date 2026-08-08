@@ -108,5 +108,5 @@ std::vector<int> GraphSequence::rneigh(int v){
 
 float GraphSequence::sizePerEdge(){
     // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
-    return ((2 * 4 + this->N.size_in_bytes() + this->B.size_in_bytes()) / static_cast<float>(this->numEdges));
+    return 8 * ((2 * 4 + this->N.size_in_bytes() + this->B.size_in_bytes()) / static_cast<float>(this->numEdges));
 }

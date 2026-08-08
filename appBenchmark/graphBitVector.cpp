@@ -46,7 +46,7 @@ float GraphBitVector::sizePerEdge(){
     for (int i = 0; i < numNodes; ++i) {
         bsize += adjM[i].size_in_bytes();
     }
-    return ((8 + bsize) / static_cast<float>(this->numEdges));
+    return 8 * ((8 + bsize) / static_cast<float>(this->numEdges));
 }
 
 bool GraphBitVector::adj(int n, int m){
