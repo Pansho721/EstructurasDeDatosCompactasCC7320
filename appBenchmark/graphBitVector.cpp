@@ -54,7 +54,7 @@ bool GraphBitVector::adj(int n, int m){
 }
 
 int GraphBitVector::neighj(int n, int j){
-    return adjM[n].rank1(j);
+    return adjM[n].select1(j);
 }
 
 std::vector<int> GraphBitVector::neigh(int n){

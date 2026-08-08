@@ -116,21 +116,35 @@ def plot_times(df: pd.DataFrame, out_dir: Path, N: float = None):
 
 def plot_inverse_time(df: pd.DataFrame, out_dir: Path, N: float = None):
     df = df.sort_values("t")
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax1 = plt.subplots(figsize=(8, 5))
 
-    ax.plot(df["t"], df["Inverse Time"], marker="o", label="Inverse Time")
+    color1 = "tab:blue"
+    ax1.plot(df["t"], df["Inverse Time"], marker="o", color=color1, label="Inverse Time")
+    ax1.set_xlabel("t")
+    ax1.set_ylabel("Inverse Time (s)", color=color1)
+    ax1.tick_params(axis="y", labelcolor=color1)
+    ax1.grid(True, linestyle="--", alpha=0.5)
+    ax1.set_xlim(df["t"].min(), df["t"].max())
+    ax1.xaxis.set_inverted(False)
 
-    ax.set_xlabel("t")
-    ax.set_ylabel("Tiempo (s)")
-    ax.set_title("Tiempos vs t")
-    ax.grid(True, linestyle="--", alpha=0.5)
-    ax.set_xlim(df["t"].min(), df["t"].max())
-    ax.xaxis.set_inverted(False)
+    # Nueva serie: tiempo de operación inversa dividido por el espacio ocupado
+    ratio = df["Inverse Time"] / df["size"]
+    color2 = "tab:green"
+    ax2 = ax1.twinx()
+    ax2.plot(df["t"], ratio, marker="^", color=color2, label="Inverse Time / size")
+    ax2.set_ylabel("Inverse Time / size (s/byte)", color=color2)
+    ax2.tick_params(axis="y", labelcolor=color2)
+
+    ax1.set_title("Inverse Time vs t")
 
     if N is not None and N > 0:
-        add_log_line(ax, N)
+        add_log_line(ax1, N)
 
-    ax.legend()
+    # Leyenda combinada de ambos ejes
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="best")
+
     fig.tight_layout()
     out_path = out_dir / "inverse_time_vs_t.png"
     fig.savefig(out_path, dpi=150)
