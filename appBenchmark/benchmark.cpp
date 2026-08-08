@@ -40,16 +40,16 @@ void rneighTEST(graph& graph){
         return;
     }
 
-    if (graph.rneigh(1, 0) != 0) std::cout << "Mismatch rneigh 1: " << graph.rneigh(1, 0) << std::endl;
-    if (graph.rneigh(1, 1) != 148) std::cout << "Mismatch rneigh 2: " << graph.rneigh(1, 1) << std::endl;
-    if (graph.rneigh(1, 2) != 177) std::cout << "Mismatch rneigh 3: " << graph.rneigh(1, 2) << std::endl;
-    if (graph.rneigh(3, 10) != 821) std::cout << "Mismatch rneigh 4: " << graph.rneigh(3, 10) << std::endl;
-    if (graph.rneigh(5, 0) != 4) std::cout << "Mismatch rneigh 5: " << graph.rneigh(5, 0) << std::endl;
-    if (graph.rneigh(350, 20) != 173) std::cout << "Mismatch rneigh 6: " << graph.rneigh(350, 20) << std::endl;
-    if (graph.rneigh(3, 0) != 2) std::cout << "Mismatch rneigh 7: " << graph.rneigh(3, 0) << std::endl;
-    if (graph.rneigh(4, 0) != 13066) std::cout << "Mismatch rneigh 8: " << graph.rneigh(4, 0) << std::endl;
-    if (graph.rneigh(2907, 9) != 1598) std::cout << "Mismatch rneigh 9: " << graph.rneigh(2907, 9) << std::endl;
-    if (graph.rneigh(9095, 2) != 5291) std::cout << "Mismatch rneigh 10: " << graph.rneigh(9095, 2) << std::endl;
+    if (graph.rneighj(1, 0) != 0) std::cout << "Mismatch rneigh 1: " << graph.rneighj(1, 0) << std::endl;
+    if (graph.rneighj(1, 1) != 148) std::cout << "Mismatch rneigh 2: " << graph.rneighj(1, 1) << std::endl;
+    if (graph.rneighj(1, 2) != 177) std::cout << "Mismatch rneigh 3: " << graph.rneighj(1, 2) << std::endl;
+    if (graph.rneighj(3, 10) != 821) std::cout << "Mismatch rneigh 4: " << graph.rneighj(3, 10) << std::endl;
+    if (graph.rneighj(5, 0) != 4) std::cout << "Mismatch rneigh 5: " << graph.rneighj(5, 0) << std::endl;
+    if (graph.rneighj(350, 20) != 173) std::cout << "Mismatch rneigh 6: " << graph.rneighj(350, 20) << std::endl;
+    if (graph.rneighj(3, 0) != 2) std::cout << "Mismatch rneigh 7: " << graph.rneighj(3, 0) << std::endl;
+    if (graph.rneighj(4, 0) != 13066) std::cout << "Mismatch rneigh 8: " << graph.rneighj(4, 0) << std::endl;
+    if (graph.rneighj(2907, 9) != 1598) std::cout << "Mismatch rneigh 9: " << graph.rneighj(2907, 9) << std::endl;
+    if (graph.rneighj(9095, 2) != 5291) std::cout << "Mismatch rneigh 10: " << graph.rneighj(9095, 2) << std::endl;
 }
 
 void outDegreeTEST(graph& graph){

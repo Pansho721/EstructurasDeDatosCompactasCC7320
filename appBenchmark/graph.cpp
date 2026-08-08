@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "graph.h"
 
@@ -42,14 +43,20 @@ bool graph::adj(int n, int m){
     return false;
 }
 
-int graph::neigh(int n, int j){
+int graph::neighj(int n, int j){
     return 0;
 }
 
-int graph::rneigh(int n, int j){
-    return 0;
+std::vector<int> graph::neigh(int n){
+    return std::vector<int>();
 }
 
+int graph::rneighj(int n, int j){
+    return 0;
+}
+std::vector<int> graph::rneigh(int n){
+    return std::vector<int>();
+}
 int graph::outDegree(int n){
     return 0;
 }

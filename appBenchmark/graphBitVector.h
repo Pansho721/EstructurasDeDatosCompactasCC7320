@@ -22,6 +22,7 @@ class GraphBitVector : public graph {
 
         float sizePerEdge();
         bool adj(int n, int m) override;
-        int neigh(int n, int j) override;
+        int neighj(int n, int j) override;
+        std::vector<int> neigh(int n) override;
         int outDegree(int n) override;
 };

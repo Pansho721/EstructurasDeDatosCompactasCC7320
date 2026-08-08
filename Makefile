@@ -49,7 +49,7 @@ $(PM_BIN): $(TEST_DIR)/permutationTEST.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/s
 $(SQ_BIN): $(TEST_DIR)/sequenceTEST.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(BENCH_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
+$(BENCH_BIN): $(APP_DIR)/benchmark.cpp $(APP_DIR)/graph.cpp $(APP_DIR)/graphBitVector.cpp $(APP_DIR)/graphSequence.cpp $(DS_DIR)/Sequence.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(TESTT_BIN): $(APP_DIR)/benchmark-heuristic.cpp $(DS_DIR)/permutation.cpp $(DS_DIR)/sparseBitVector.cpp $(SDSL_SRC)

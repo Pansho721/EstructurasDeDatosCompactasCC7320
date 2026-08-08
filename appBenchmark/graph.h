@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
 
 extern int N;
 extern int E;
@@ -29,8 +31,10 @@ class graph {
         virtual ~graph();
 
         virtual bool adj(int n, int m);
-        virtual int neigh(int n, int j);
-        virtual int rneigh(int n, int j);
+        virtual int neighj(int n, int j);
+        virtual std::vector<int> neigh(int n);
+        virtual int rneighj(int n, int j);
+        virtual std::vector<int> rneigh(int n);
         virtual int outDegree(int n);
         virtual int inDegree(int n);
 

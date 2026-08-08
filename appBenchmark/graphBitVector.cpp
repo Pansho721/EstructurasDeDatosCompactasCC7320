@@ -53,9 +53,19 @@ bool GraphBitVector::adj(int n, int m){
     return this->adjM[n].access(m);
 }
 
-int GraphBitVector::neigh(int n, int j){
+int GraphBitVector::neighj(int n, int j){
     return adjM[n].rank1(j);
 }
+
+std::vector<int> GraphBitVector::neigh(int n){
+    int outDeg = outDegree(n);
+    std::vector<int> neighbors(outDeg);
+    for(int j = 0; j < outDeg; ++j){
+        neighbors[j] = neighj(n, j);
+    }
+    return neighbors;
+}
+
 
 int GraphBitVector::outDegree(int n){
     return this->adjM[n].rank1(this->numNodes - 1);

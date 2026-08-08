@@ -62,7 +62,7 @@ int GraphSequence::outDegree(int v){
     return next - start - 1;
 }
 
-int GraphSequence::neigh(int v, int j){
+int GraphSequence::neighj(int v, int j){
     if (v < 0 || v >= this->numNodes || j < 0) return -1;
     const int deg = this->outDegree(v);
     if (j >= deg) return -1;
@@ -72,7 +72,18 @@ int GraphSequence::neigh(int v, int j){
     return this->N.access(p);
 }
 
-int GraphSequence::rneigh(int v, int j){
+std::vector<int> GraphSequence::neigh(int v){
+    if (v < 0 || v >= this->numNodes) return std::vector<int>();
+
+    const int deg = this->outDegree(v);
+    std::vector<int> neighbors(deg);
+    for (int j = 0; j < deg; ++j) {
+        neighbors[j] = neighj(v,j);
+    }
+    return neighbors;
+}
+
+int GraphSequence::rneighj(int v, int j){
     if (v < 0 || v >= this->numNodes || j < 0) return -1;
     const int indeg = this->inDegree(v);
     if (j >= indeg) return -1;
@@ -82,6 +93,17 @@ int GraphSequence::rneigh(int v, int j){
     if (p < 0 || p >= this->numEdges) return -1;
 
     return this->B.select0(p + 1) - p - 1;
+}
+
+std::vector<int> GraphSequence::rneigh(int v){
+    if (v < 0 || v >= this->numNodes) return std::vector<int>();
+
+    const int indeg = this->inDegree(v);
+    std::vector<int> neighbors(indeg);
+    for (int j = 0; j < indeg; ++j) {
+        neighbors[j] = rneighj(v, j);
+    }
+    return neighbors;
 }
 
 float GraphSequence::sizePerEdge(){
