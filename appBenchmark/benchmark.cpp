@@ -80,7 +80,10 @@ void inDegreeTEST(graph& graph){
 
 BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
     std::cout << "GraphBitVector Benchmark" << std::endl;
-    BenchmarkDoc doc("GraphBitVector", 0.0, 0.0, 0.0, 0.0, 0.0, 0);
+    std::string name;
+    name = "GraphBitVector";
+
+    BenchmarkDoc doc(name, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
 
 
     // =========================
@@ -219,11 +222,13 @@ int main(int argc, char* argv[]){
 
     std::cout << "/// BENCHMARK START ///" << std::endl;
 
-    std::cout << "-- Graph Bitvector --" << std::endl;
+    std::cout << "-- Graph BitVector --" << std::endl;
     BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
 
     std::cout << "-- Graph Sequence --" << std::endl;
     BenchmarkDoc gs = runGraphSequenceBenchmark(file);
+
+    
 
     std::cout << "/// BENCHMARK END ///" << std::endl;
 

@@ -8,7 +8,7 @@ void GraphBitVector::addEdge(std::pair<int, int> edge){
     adjM[edge.first].setBit(edge.second);
 }
 
-GraphBitVector::GraphBitVector(std::string file, int N, int E){
+GraphBitVector::GraphBitVector(std::string file, int N, int E) {
     std::ifstream inputFile(file);
     if(!inputFile.is_open()){
         std::cerr << "Error opening file: " << file << std::endl;
@@ -35,7 +35,6 @@ GraphBitVector::GraphBitVector(std::string file, int N, int E){
     this->numNodes = N;
     this->numEdges = E;
     inputFile.close();
-    #pragma omp parallel for
     for(int i=0; i<N; i++){
         adjM[i].finishSetUp();
     }
@@ -47,7 +46,7 @@ float GraphBitVector::sizePerEdge(){
     for (int i = 0; i < numNodes; ++i) {
         bsize += adjM[i].size_in_bytes();
     }
-    return ((64 + bsize) / static_cast<float>(this->numEdges));
+    return ((8 + bsize) / static_cast<float>(this->numEdges));
 }
 
 bool GraphBitVector::adj(int n, int m){

@@ -66,5 +66,5 @@ int Permutation::inverse(int index) {
 }
 
 int Permutation::size_in_bytes() {
-    return this->B.size_in_bytes() + this->pi.size() * 32 + this->S.size() * 32;
+    return this->B.size_in_bytes() + this->pi.size() * 4 + this->S.size() * 4;
 }

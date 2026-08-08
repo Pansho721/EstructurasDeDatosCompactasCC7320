@@ -1,22 +1,11 @@
-#include "../canonicalDS/bitVector.h"
+#include "../canonicalDS/sparseBitVector.h"
 #include <iostream>
 
 int main() {
     // Test the bitVector class
-    int size = 10;
-    bitVector bv(size);
-    int bits[] = {0, 0, 1, 0, 0, 1, 0, 1, 0, 0}; // Example bit pattern
-
-    // Set some bits
-    for (int i = 0; i < size; ++i) {
-        if (bits[i] == 1) {
-            bv.setBit(i);
-        } else {
-            bv.clearBit(i);
-        }
-    }
-
-    bv.finishSetUp();
+    std::vector<bool> bits = {false, false, true, false, false, true, false, true, false, false}; // Example bit pattern
+    sparseBitVector bv(bits);
+    int size = bv.length(); // Get the length of the bit vector
 
     // Test rank1
     for (int i = 0; i < size; ++i) {
@@ -27,7 +16,7 @@ int main() {
     for (int j = 1; j <= 3; ++j) {
         std::cout << "select1(" << j << ") = " << bv.select1(j) << std::endl;
     }
-    std::cout << "selcet1(1000) = " << bv.select1(1000) << std::endl; // Test select1 with a rank greater than the number of 1s
+    std::cout << "select1(1000) = " << bv.select1(1000) << std::endl; // Test select1 with a rank greater than the number of 1s
 
     // Test rank0
     for (int i = 0; i < size; ++i) {

@@ -138,9 +138,9 @@ int sparseBitVector::length() {
 }
 
 int sparseBitVector::size_in_bytes() {
-    uint64_t bits_mem = sdsl::size_in_bytes(this->bits) * 8;
-    uint64_t pending_mem = sdsl::size_in_bytes(this->pendingBits) * 8;
-    return 32 + 1 + bits_mem + pending_mem;
+    uint64_t bits_mem = sdsl::size_in_bytes(this->bits);
+    uint64_t pending_mem = sdsl::size_in_bytes(this->pendingBits);
+    return 4 + 1 + bits_mem + pending_mem;
 }
 
 int sparseBitVector::pred0(int index) {
