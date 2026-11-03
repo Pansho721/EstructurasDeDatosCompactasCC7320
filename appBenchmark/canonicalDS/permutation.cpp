@@ -1,86 +1,76 @@
 #include "permutation.h"
 
-Permutation::Permutation(std::vector<int> pi, int t) : n(pi.size()), pi(pi) {
-    B = sparseBitVector(this->n);
-    sparseBitVector V(this->n);
-    for (int i = 0; i < this->n; ++i) {
-        B.clearBit(i);
-        V.clearBit(i);
-    }
-    for (int i = 0; i < this->n; ++i) {
-        if (not V.access(i)) {
-            V.setBit(i);
-            int j = pi[i];
-            int k = 1;
-            while (j != i) {
-                if (k % t == 0) {
-                    B.setBit(j);
-                }
-                V.setBit(j);
-                j = pi[j];
-                k++;
-            }
-            B.setBit(i);
-        }
-    }
-    B.finishSetUp();
+Permutation::Permutation(const std::vector<int>& p, int t) : n(p.size()) {
+    const uint8_t width = sdsl::bits::hi(n > 1 ? n - 1 : 1) + 1;
+    pi = sdsl::int_vector<>(n, 0, width);
+    for (uint64_t i = 0; i < n; ++i) pi[i] = p[i];
 
-    std::vector<int> S(B.rank1(this->n - 1) + 1);
-    for (int i = 0; i < this->n; ++i) {
-        if (B.access(i)) {
-            V.clearBit(i);
-            int j = pi[i];
-            while (V.access(j)) {
-                if (B.access(j)) {
-                    S[B.rank1(j)] = i;
-                }
-                V.clearBit(j);
-                j = pi[j];
+    // Mark the start of every cycle and every t-th element along it.
+    B = sdsl::bit_vector(n, 0);
+    sdsl::bit_vector visited(n, 0);
+    std::vector<std::vector<uint64_t>> marksPerCycle;
+    for (uint64_t i = 0; i < n; ++i) {
+        if (visited[i]) continue;
+        std::vector<uint64_t> marks;
+        uint64_t j = i;
+        uint64_t k = 0;
+        do {
+            visited[j] = 1;
+            if (k % t == 0) {
+                B[j] = 1;
+                marks.push_back(j);
             }
-            if (B.access(j)) {
-                S[B.rank1(j)] = i;
-            }
+            j = pi[j];
+            ++k;
+        } while (j != i);
+        marksPerCycle.push_back(std::move(marks));
+    }
+    sdsl::util::init_support(rankB, &B);
+
+    // Each mark points back to the previous mark of its cycle (the first one to the last).
+    S = sdsl::int_vector<>(rankB(n), 0, width);
+    for (const std::vector<uint64_t>& marks : marksPerCycle) {
+        for (uint64_t l = 0; l < marks.size(); ++l) {
+            const uint64_t prev = marks[(l + marks.size() - 1) % marks.size()];
+            S[rankB(marks[l])] = prev;
         }
     }
-    this->S = S;
 }
 
 int Permutation::access(int index) {
-    if (index < 0 || index >= this->n) return -1;
-    return this->pi[index];
+    if (index < 0 || static_cast<uint64_t>(index) >= n) return -1;
+    return pi[index];
 }
 
 int Permutation::inverse(int index) {
-    if (index < 0 || index >= this->n) return -1;
-    int j = index;
-    bool s = true;
-    while (this->pi[j] != index) {
-        if (s && B.access(j)){
-            j = S[B.rank1(j)];
-            s = false;
+    if (index < 0 || static_cast<uint64_t>(index) >= n) return -1;
+    uint64_t j = index;
+    bool jumped = false;
+    while (pi[j] != static_cast<uint64_t>(index)) {
+        if (!jumped && B[j]) {
+            j = S[rankB(j)];
+            jumped = true;
         } else {
-            j = this->pi[j];
+            j = pi[j];
         }
     }
     return j;
 }
 
 int Permutation::size_in_bytes() {
-    return this->B.size_in_bytes() + this->pi.size() * 4 + this->S.size() * 4;
+    return sdsl::size_in_bytes(pi) + sdsl::size_in_bytes(S) + sdsl::size_in_bytes(B) + sdsl::size_in_bytes(rankB);
 }
 
-
-
-
-int Permutation::inverse_steps(int index) {  // versión de debug
-    int j = index, steps = 0;
-    bool s = true;
-    while (this->pi[j] != index) {
-        if (s && B.access(j)) {
-            j = S[B.rank1(j)];
-            s = false;
+int Permutation::inverse_steps(int index) {  // debug version of inverse()
+    uint64_t j = index;
+    int steps = 0;
+    bool jumped = false;
+    while (pi[j] != static_cast<uint64_t>(index)) {
+        if (!jumped && B[j]) {
+            j = S[rankB(j)];
+            jumped = true;
         } else {
-            j = this->pi[j];
+            j = pi[j];
         }
         steps++;
     }

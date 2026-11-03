@@ -1,72 +1,47 @@
 #include "graphBitVector.h"
-#include <cmath>
-#include <omp.h>
-#include <sstream>
 
-void GraphBitVector::addEdge(std::pair<int, int> edge){
-    if(adjM[edge.first].access(edge.second)) return;
-    adjM[edge.first].setBit(edge.second);
-}
-
-GraphBitVector::GraphBitVector(std::string file, int N, int E) {
-    std::ifstream inputFile(file);
-    if(!inputFile.is_open()){
-        std::cerr << "Error opening file: " << file << std::endl;
-        return;
+GraphBitVector::GraphBitVector(const std::vector<Edge>& edges, uint64_t N){
+    // Edges are sorted by (u, v), so the positions u*N+v are strictly increasing.
+    sdsl::sd_vector_builder builder(N * N, edges.size());
+    for(const Edge& edge : edges){
+        builder.set(edge.first * N + edge.second);
     }
-    std::vector<int> nodes;
-    nodes.resize(N);
-    adjM.resize(N);
-    for(int i=0; i<N; i++){
-        nodes[i] = i;
-        adjM[i] = sparseBitVector(N);
-    }
-    std::string sEdge;
-    while(std::getline(inputFile, sEdge)){
-        if(sEdge.empty()) continue;
-
-        int u, v;
-        std::istringstream iss(sEdge);
-        if(!(iss >> u >> v)) continue;
-        if(u < 0 || u >= N || v < 0 || v >= N) continue;
-
-        addEdge(std::make_pair(nodes[u], nodes[v]));
-    }
-    this->numNodes = N;
-    this->numEdges = E;
-    inputFile.close();
-    for(int i=0; i<N; i++){
-        adjM[i].finishSetUp();
-    }
+    M = sdsl::sd_vector<>(builder);
+    sdsl::util::init_support(rankM, &M);
+    sdsl::util::init_support(selectM, &M);
+    n = N;
+    e = edges.size();
 }
 
 float GraphBitVector::sizePerEdge(){
-    int const numNodes = this->numNodes;
-    int bsize = 0;
-    for (int i = 0; i < numNodes; ++i) {
-        bsize += adjM[i].size_in_bytes();
-    }
-    return 8 * ((8 + bsize) / static_cast<float>(this->numEdges));
+    const uint64_t bytes = sdsl::size_in_bytes(M) + sdsl::size_in_bytes(rankM) + sdsl::size_in_bytes(selectM);
+    return 8.0f * bytes / e;
 }
 
-bool GraphBitVector::adj(int n, int m){
-    return this->adjM[n].access(m);
+bool GraphBitVector::adj(uint64_t u, uint64_t v){
+    if(u >= n || v >= n) return false;
+    return M[u * n + v];
 }
 
-int GraphBitVector::neighj(int n, int j){
-    return adjM[n].select1(j);
+int64_t GraphBitVector::neighj(uint64_t u, uint64_t j){
+    if(u >= n) return -1;
+    const uint64_t before = rankM(u * n);
+    if(j >= rankM((u + 1) * n) - before) return -1;
+    return selectM(before + j + 1) - u * n;
 }
 
-std::vector<int> GraphBitVector::neigh(int n){
-    int outDeg = outDegree(n);
-    std::vector<int> neighbors(outDeg);
-    for(int j = 0; j < outDeg; ++j){
-        neighbors[j] = neighj(n, j);
+std::vector<uint64_t> GraphBitVector::neigh(uint64_t u){
+    if(u >= n) return {};
+    const uint64_t before = rankM(u * n);
+    const uint64_t deg = rankM((u + 1) * n) - before;
+    std::vector<uint64_t> neighbors(deg);
+    for(uint64_t j = 0; j < deg; ++j){
+        neighbors[j] = selectM(before + j + 1) - u * n;
     }
     return neighbors;
 }
 
-
-int GraphBitVector::outDegree(int n){
-    return this->adjM[n].rank1(this->numNodes - 1);
+uint64_t GraphBitVector::outDegree(uint64_t u){
+    if(u >= n) return 0;
+    return rankM((u + 1) * n) - rankM(u * n);
 }

@@ -1,213 +1,81 @@
-#include <iostream>
-#include <fstream>
-#include <string>
 #include <chrono>
-#include <ctime>
+#include <cmath>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <random>
+#include <string>
+
 #include "graph.h"
 #include "graphBitVector.h"
+#include "graphK2Tree.h"
 #include "graphSequence.h"
 
-int MAX = 999999999; // Placeholder for unimplemented functions
+static const int QUERIES = 100000;
+static volatile uint64_t sink; // keeps query results from being optimized away
 
 static std::string resolveGraphFile(const std::string& file){
-    std::ifstream direct(file);
-    if(direct.is_open()) return file;
-
+    if(std::ifstream(file).is_open()) return file;
     const std::string parent = "../" + file;
-    std::ifstream fromParent(parent);
-    if(fromParent.is_open()) return parent;
-
+    if(std::ifstream(parent).is_open()) return parent;
     return "";
 }
 
-void adjTEST(graph& graph){
-
-    if (!graph.adj(0, 1)) std::cout << "Mismatch adjacency 1" << std::endl;
-    if (graph.adj(50, 50)) std::cout << "Mismatch adjacency 2" << std::endl;
-    if (!graph.adj(90, 91)) std::cout << "Mismatch adjacency 3" << std::endl;
-    if (graph.adj(119, 40)) std::cout << "Mismatch adjacency 4" << std::endl;
-    if (graph.adj(148, 13)) std::cout << "Mismatch adjacency 5" << std::endl;
-    if (!graph.adj(215, 225)) std::cout << "Mismatch adjacency 6" << std::endl;
-    if (!graph.adj(363, 408)) std::cout << "Mismatch adjacency 7" << std::endl;
-    if (graph.adj(4877, 5090)) std::cout << "Mismatch adjacency 8" << std::endl;
-    if (!graph.adj(7056, 1610)) std::cout << "Mismatch adjacency 9" << std::endl;
-    if (graph.adj(13200, 7777)) std::cout << "Mismatch adjacency 10" << std::endl;
+// Average nanoseconds per call of query(i), for i in [0, QUERIES).
+static float timeQueries(const std::function<uint64_t(int)>& query){
+    auto start = std::chrono::high_resolution_clock::now();
+    uint64_t acc = 0;
+    for(int i = 0; i < QUERIES; ++i) acc += query(i);
+    auto end = std::chrono::high_resolution_clock::now();
+    sink = acc;
+    return std::chrono::duration<float, std::nano>(end - start).count() / QUERIES;
 }
 
-void rneighTEST(graph& graph){
-    // Reverse-neighbor checks are only meaningful for GraphSequence right now.
-    if (dynamic_cast<GraphSequence*>(&graph) == nullptr) {
-        return;
+struct Workload {
+    std::vector<uint64_t> nodes;               // random nodes
+    std::vector<std::pair<uint64_t, uint64_t>> pairs;  // half real edges, half random pairs
+    std::vector<Edge> edges;                   // random real edges
+};
+
+static Workload makeWorkload(const std::vector<Edge>& edges, uint64_t N){
+    std::mt19937_64 rng(42);
+    std::uniform_int_distribution<uint64_t> node(0, N - 1);
+    std::uniform_int_distribution<size_t> edge(0, edges.size() - 1);
+    Workload w;
+    for(int i = 0; i < QUERIES; ++i){
+        w.nodes.push_back(node(rng));
+        w.pairs.push_back(i % 2 ? edges[edge(rng)] : Edge(node(rng), node(rng)));
+        w.edges.push_back(edges[edge(rng)]);
     }
-
-    if (graph.rneighj(1, 0) != 0) std::cout << "Mismatch rneigh 1: " << graph.rneighj(1, 0) << std::endl;
-    if (graph.rneighj(1, 1) != 148) std::cout << "Mismatch rneigh 2: " << graph.rneighj(1, 1) << std::endl;
-    if (graph.rneighj(1, 2) != 177) std::cout << "Mismatch rneigh 3: " << graph.rneighj(1, 2) << std::endl;
-    if (graph.rneighj(3, 10) != 821) std::cout << "Mismatch rneigh 4: " << graph.rneighj(3, 10) << std::endl;
-    if (graph.rneighj(5, 0) != 4) std::cout << "Mismatch rneigh 5: " << graph.rneighj(5, 0) << std::endl;
-    if (graph.rneighj(350, 20) != 173) std::cout << "Mismatch rneigh 6: " << graph.rneighj(350, 20) << std::endl;
-    if (graph.rneighj(3, 0) != 2) std::cout << "Mismatch rneigh 7: " << graph.rneighj(3, 0) << std::endl;
-    if (graph.rneighj(4, 0) != 13066) std::cout << "Mismatch rneigh 8: " << graph.rneighj(4, 0) << std::endl;
-    if (graph.rneighj(2907, 9) != 1598) std::cout << "Mismatch rneigh 9: " << graph.rneighj(2907, 9) << std::endl;
-    if (graph.rneighj(9095, 2) != 5291) std::cout << "Mismatch rneigh 10: " << graph.rneighj(9095, 2) << std::endl;
+    return w;
 }
 
-void outDegreeTEST(graph& graph){
-    if (graph.outDegree(0) != 1) std::cout << "Mismatch outDegree 1: " << graph.outDegree(0) << std::endl;
-    if (graph.outDegree(1) != 1) std::cout << "Mismatch outDegree 2: " << graph.outDegree(1) << std::endl;
-    if (graph.outDegree(2) != 1) std::cout << "Mismatch outDegree 3: " << graph.outDegree(2) << std::endl;
-    if (graph.outDegree(3) != 65) std::cout << "Mismatch outDegree 4: " << graph.outDegree(3) << std::endl;
-    if (graph.outDegree(5) != 0) std::cout << "Mismatch outDegree 5: " << graph.outDegree(5) << std::endl;
-    if (graph.outDegree(350) != 40) std::cout << "Mismatch outDegree 6: " << graph.outDegree(350) << std::endl;
-    if (graph.outDegree(900) != 11) std::cout << "Mismatch outDegree 7: " << graph.outDegree(900) << std::endl;
-    if (graph.outDegree(4877) != 1) std::cout << "Mismatch outDegree 8: " << graph.outDegree(4877) << std::endl;
-    if (graph.outDegree(7056) != 26) std::cout << "Mismatch outDegree 9: " << graph.outDegree(7056) << std::endl;
-    if (graph.outDegree(13200) != 1) std::cout << "Mismatch outDegree 10: " << graph.outDegree(13200) << std::endl;
-}
+template<class G>
+static BenchmarkDoc runBenchmark(const std::vector<Edge>& edges, uint64_t N, const Workload& w){
+    auto start = std::chrono::high_resolution_clock::now();
+    G g(edges, N);
+    auto end = std::chrono::high_resolution_clock::now();
 
-void inDegreeTEST(graph& graph){
-    if (graph.inDegree(0) != 1) std::cout << "Mismatch inDegree 1: " << graph.inDegree(0) << std::endl;
-    if (graph.inDegree(1) != 3) std::cout << "Mismatch inDegree 2: " << graph.inDegree(1) << std::endl;
-    if (graph.inDegree(2) != 4) std::cout << "Mismatch inDegree 3: " << graph.inDegree(2) << std::endl;
-    if (graph.inDegree(3) != 65) std::cout << "Mismatch inDegree 4: " << graph.inDegree(3) << std::endl;
-    if (graph.inDegree(5) != 1) std::cout << "Mismatch inDegree 5: " << graph.inDegree(5) << std::endl;
-    if (graph.inDegree(5359) != 11) std::cout << "Mismatch inDegree 6: " << graph.inDegree(5359) << std::endl;
-    if (graph.inDegree(6576) != 7) std::cout << "Mismatch inDegree 7: " << graph.inDegree(6576) << std::endl;
-    if (graph.inDegree(11683) != 10) std::cout << "Mismatch inDegree 8: " << graph.inDegree(11683) << std::endl;
-    if (graph.inDegree(15566) != 4) std::cout << "Mismatch inDegree 9: " << graph.inDegree(15566) << std::endl;
-    if (graph.inDegree(33666) != 1) std::cout << "Mismatch inDegree 10: " << graph.inDegree(33666) << std::endl;
-}
+    BenchmarkDoc doc(g.name());
+    std::cout << "-- " << doc.name << " --" << std::endl;
+    doc.constructionTime = std::chrono::duration<float>(end - start).count();
+    doc.sizePerEdge = g.sizePerEdge();
 
-BenchmarkDoc runGraphBitVectorBenchmark(std::string file){
-    std::cout << "GraphBitVector Benchmark" << std::endl;
-    std::string name;
-    name = "GraphBitVector";
+    doc.adjTime = timeQueries([&](int i){ return g.adj(w.pairs[i].first, w.pairs[i].second); });
+    doc.outDegreeTime = timeQueries([&](int i){ return g.outDegree(w.nodes[i]); });
+    // neighj(u, j) with j < outDegree(u): use the position of a real edge inside its list.
+    std::vector<uint64_t> js(QUERIES);
+    for(int i = 0; i < QUERIES; ++i) js[i] = w.edges[i].second % g.outDegree(w.edges[i].first);
+    doc.neighTime = timeQueries([&](int i){ return g.neighj(w.edges[i].first, js[i]); });
 
-    BenchmarkDoc doc(name, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
-
-
-    // =========================
-    // Construction of the GraphBitVector
-    auto initConstructionTime = std::chrono::high_resolution_clock::now();
-
-    GraphBitVector graphBitVector(file, N, E);
-    
-    auto endConstructionTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
-    doc.ConstructionTime = constructionDuration.count();
-
-    doc.sizePerEdge = graphBitVector.sizePerEdge();
-
-    // =========================
-    // Benchmark adjacency check
-    auto initAdjTime = std::chrono::high_resolution_clock::now();
-
-    adjTEST(graphBitVector);
-    //graphBitVector.adj(0, 1);
-
-    auto endAdjTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
-    doc.adjTime = adjDuration.count();
-
-
-    // =========================
-    // Benchmark neighbor
-    auto initNeighTime = std::chrono::high_resolution_clock::now();
-
-    rneighTEST(graphBitVector);
-    //graphBitVector.neigh(0, 1);
-
-    auto endNeighTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
-    doc.rneighTime = neighDuration.count();
-
-
-    // =========================
-    // Benchmark outDegree
-    auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
-
-    outDegreeTEST(graphBitVector);
-    //graphBitVector.outDegree(0);
-
-    auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
-    doc.outDegreeTime = outDegreeDuration.count();
-
-    
-    // =========================
-    // Benchmark inDegree and reverse neighbor
-    doc.inDegreeTime = MAX; // Not implemented in GraphBitVector
-    doc.rneighTime = MAX; // Not implemented in GraphBitVector
-
+    if(g.supportsReverse()){
+        doc.inDegreeTime = timeQueries([&](int i){ return g.inDegree(w.nodes[i]); });
+        for(int i = 0; i < QUERIES; ++i) js[i] = w.edges[i].first % g.inDegree(w.edges[i].second);
+        doc.rneighTime = timeQueries([&](int i){ return g.rneighj(w.edges[i].second, js[i]); });
+    }
     return doc;
 }
-
-BenchmarkDoc runGraphSequenceBenchmark(std::string file){
-    std::cout << "GraphSequence Benchmark" << std::endl;
-    BenchmarkDoc doc("GraphSequence", 0.0, 0.0, 0.0, 0.0, 0.0, 0);
-
-
-    // =========================
-    // Construction of the GraphSequence
-    auto initConstructionTime = std::chrono::high_resolution_clock::now();
-
-    GraphSequence graphSequence(file, N, E);
-
-    auto endConstructionTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> constructionDuration = endConstructionTime - initConstructionTime;
-    doc.ConstructionTime = constructionDuration.count();
-
-    doc.sizePerEdge = graphSequence.sizePerEdge();
-
-    // =========================
-    // Benchmark adjacency check
-    auto initAdjTime = std::chrono::high_resolution_clock::now();
-
-    //graphSequence.adj(0, 1);
-    adjTEST(graphSequence);
-
-    auto endAdjTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> adjDuration = endAdjTime - initAdjTime;
-    doc.adjTime = adjDuration.count();
-
-    // =========================
-    // Benchmark neighbor
-    auto initNeighTime = std::chrono::high_resolution_clock::now();
-
-
-    rneighTEST(graphSequence);
-    //graphSequence.neigh(0, 1);
-
-    auto endNeighTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> neighDuration = endNeighTime - initNeighTime;
-    doc.rneighTime = neighDuration.count();
-
-    // =========================
-    // Benchmark outDegree
-    auto initOutDegreeTime = std::chrono::high_resolution_clock::now();
-
-    outDegreeTEST(graphSequence);
-    //graphSequence.outDegree(0);
-
-    auto endOutDegreeTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> outDegreeDuration = endOutDegreeTime - initOutDegreeTime;
-    doc.outDegreeTime = outDegreeDuration.count();
-
-
-    // =========================
-    // Benchmark inDegree
-    auto initInDegreeTime = std::chrono::high_resolution_clock::now();
-
-    inDegreeTEST(graphSequence);
-    //graphSequence.inDegree(0);
-
-    auto endInDegreeTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> inDegreeDuration = endInDegreeTime - initInDegreeTime;
-    doc.inDegreeTime = inDegreeDuration.count();
-
-    return doc;
-}
-
 
 int main(int argc, char* argv[]){
     if (argc < 2){
@@ -220,22 +88,28 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
+    uint64_t N;
+    std::vector<Edge> edges = loadEdges(file, N);
+    const double E = edges.size();
+    const double cells = static_cast<double>(N) * N;
+    // Information-theoretic lower bound: log2 C(N^2, E) bits for a graph with N nodes and E edges.
+    const double bound = (std::lgamma(cells + 1) - std::lgamma(E + 1) - std::lgamma(cells - E + 1)) / std::log(2.0);
+
     std::cout << "/// BENCHMARK START ///" << std::endl;
+    std::cout << "Nodes: " << N << ", Edges: " << edges.size() << ", Queries per operation: " << QUERIES << std::endl;
 
-    std::cout << "-- Graph BitVector --" << std::endl;
-    BenchmarkDoc gbv = runGraphBitVectorBenchmark(file);
-
-    std::cout << "-- Graph Sequence --" << std::endl;
-    BenchmarkDoc gs = runGraphSequenceBenchmark(file);
-
-    
+    Workload w = makeWorkload(edges, N);
+    BenchmarkDoc gbv = runBenchmark<GraphBitVector>(edges, N, w);
+    BenchmarkDoc gs = runBenchmark<GraphSequence>(edges, N, w);
+    BenchmarkDoc gk2 = runBenchmark<GraphK2Tree>(edges, N, w);
 
     std::cout << "/// BENCHMARK END ///" << std::endl;
 
     std::cout << "\n\n/// BENCHMARK RESULTS ///" << std::endl;
-
+    std::cout << "Theoretical lower bound: " << bound / E << " bits per edge" << std::endl;
     gbv.print();
     gs.print();
+    gk2.print();
 
     return 0;
 }

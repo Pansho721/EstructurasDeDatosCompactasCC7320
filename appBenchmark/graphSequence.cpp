@@ -1,112 +1,100 @@
 #include "graphSequence.h"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <cstdio>
+#include <filesystem>
 
+#include <sdsl/int_vector_buffer.hpp>
 
-GraphSequence::GraphSequence(std::string file, int N, int E){
-    std::ifstream inputFile(file);
-    if(!inputFile.is_open()){
-        std::cerr << "Error opening file: " << file << std::endl;
-        return;
+GraphSequence::GraphSequence(const std::vector<Edge>& edges, uint64_t N){
+    n = N;
+    e = edges.size();
+
+    // Targets in source order. sdsl builds wavelet matrices from an on-disk buffer.
+    sdsl::int_vector<> targets(e, 0, sdsl::bits::hi(N) + 1);
+    for(uint64_t i = 0; i < e; ++i){
+        targets[i] = edges[i].second;
     }
-    std::vector<int> S;
-    S.reserve(E);
-    std::string sEdge;
-    std::vector<int> degree(N, 0);
-    int u, v;
-    while(inputFile >> u >> v){
-        if(u < 0 || u >= N || v < 0 || v >= N) continue;
-        S.push_back(v);
-        degree[u]++;
+    const std::string tmp = sdsl::tmp_file((std::filesystem::temp_directory_path() / "graphSequence").string(), "_S");
+    sdsl::store_to_file(targets, tmp);
+    {
+        sdsl::int_vector_buffer<> buf(tmp);
+        S = sdsl::wm_int<sdsl::rrr_vector<63>>(buf, buf.size());
     }
-    const int actualEdges = static_cast<int>(S.size());
-    this->N = Sequence(S, N);
-    this->B = sparseBitVector(actualEdges + N);
+    std::remove(tmp.c_str());
 
-    int index = 0;
-    for(int node=0; node < N; node+=1){
-        this->B.setBit(index);
-        int d = degree[node];
-        for(int j=1; j<=d; j++){
-            this->B.clearBit(index + j);
-        }
-        index += d + 1;
+    sdsl::sd_vector_builder builder(N + e + 1, N + 1);
+    uint64_t i = 0;
+    for(uint64_t u = 0; u <= N; ++u){
+        builder.set(u + i);
+        while(i < e && edges[i].first == u) ++i;
     }
-    this->B.finishSetUp();
-    this->numNodes = N;
-    this->numEdges = actualEdges;
+    B = sdsl::sd_vector<>(builder);
+    sdsl::util::init_support(rankB, &B);
+    sdsl::util::init_support(selectB, &B);
+    sdsl::util::init_support(select0B, &B);
 }
 
-bool GraphSequence::adj(int v, int u){
-    if (v < 0 || v >= this->numNodes || u < 0 || u >= this->numNodes) {
-        return false;
-    }
-
-    const int start = this->B.select1(v + 1) - v;
-    const int end = this->B.select1(v + 2) - (v + 1);
-    return (this->N.rank(u, end) - this->N.rank(u, start)) == 1;
+uint64_t GraphSequence::start(uint64_t u){
+    return selectB(u + 1) - u;
 }
 
-int GraphSequence::inDegree(int v){
-    if (v < 0 || v >= this->numNodes) return -1;
-    return this->N.rank(v, this->numEdges);
+uint64_t GraphSequence::end(uint64_t u){
+    return selectB(u + 2) - (u + 1);
 }
 
-int GraphSequence::outDegree(int v){
-    if (v < 0 || v >= this->numNodes) return -1;
-
-    const int start = this->B.select1(v + 1);
-    const int next = this->B.select1(v + 2);
-    return next - start - 1;
+float GraphSequence::sizePerEdge(){
+    const uint64_t bytes = sdsl::size_in_bytes(S) + sdsl::size_in_bytes(B)
+        + sdsl::size_in_bytes(rankB) + sdsl::size_in_bytes(selectB) + sdsl::size_in_bytes(select0B);
+    return 8.0f * bytes / e;
 }
 
-int GraphSequence::neighj(int v, int j){
-    if (v < 0 || v >= this->numNodes || j < 0) return -1;
-    const int deg = this->outDegree(v);
-    if (j >= deg) return -1;
-
-    const int start = this->B.select1(v + 1);
-    const int p = start - v + j;
-    return this->N.access(p);
+bool GraphSequence::adj(uint64_t u, uint64_t v){
+    if(u >= n || v >= n) return false;
+    return S.rank(end(u), v) > S.rank(start(u), v);
 }
 
-std::vector<int> GraphSequence::neigh(int v){
-    if (v < 0 || v >= this->numNodes) return std::vector<int>();
+int64_t GraphSequence::neighj(uint64_t u, uint64_t j){
+    if(u >= n) return -1;
+    const uint64_t s = start(u);
+    if(s + j >= end(u)) return -1;
+    return S[s + j];
+}
 
-    const int deg = this->outDegree(v);
-    std::vector<int> neighbors(deg);
-    for (int j = 0; j < deg; ++j) {
-        neighbors[j] = neighj(v,j);
+std::vector<uint64_t> GraphSequence::neigh(uint64_t u){
+    if(u >= n) return {};
+    const uint64_t s = start(u);
+    const uint64_t t = end(u);
+    std::vector<uint64_t> neighbors;
+    neighbors.reserve(t - s);
+    for(uint64_t p = s; p < t; ++p){
+        neighbors.push_back(S[p]);
     }
     return neighbors;
 }
 
-int GraphSequence::rneighj(int v, int j){
-    if (v < 0 || v >= this->numNodes || j < 0) return -1;
-    const int indeg = this->inDegree(v);
-    if (j >= indeg) return -1;
-
-    // Sequence::select uses 1-based rank argument; this API exposes j as 0-based.
-    const int p = this->N.select(v, j + 1);
-    if (p < 0 || p >= this->numEdges) return -1;
-
-    return this->B.select0(p + 1) - p - 1;
+uint64_t GraphSequence::outDegree(uint64_t u){
+    if(u >= n) return 0;
+    return end(u) - start(u);
 }
 
-std::vector<int> GraphSequence::rneigh(int v){
-    if (v < 0 || v >= this->numNodes) return std::vector<int>();
+int64_t GraphSequence::rneighj(uint64_t v, uint64_t j){
+    if(v >= n || j >= inDegree(v)) return -1;
+    const uint64_t p = S.select(j + 1, v);
+    // The (p+1)-th zero of B is edge p; the number of ones before it is source + 1.
+    return rankB(select0B(p + 1)) - 1;
+}
 
-    const int indeg = this->inDegree(v);
-    std::vector<int> neighbors(indeg);
-    for (int j = 0; j < indeg; ++j) {
+std::vector<uint64_t> GraphSequence::rneigh(uint64_t v){
+    if(v >= n) return {};
+    const uint64_t deg = inDegree(v);
+    std::vector<uint64_t> neighbors(deg);
+    for(uint64_t j = 0; j < deg; ++j){
         neighbors[j] = rneighj(v, j);
     }
     return neighbors;
 }
 
-float GraphSequence::sizePerEdge(){
-    // 2 ints; Sequence, numEdges ints; BitVector: numNodes + numEdges bits.
-    return 8 * ((2 * 4 + this->N.size_in_bytes() + this->B.size_in_bytes()) / static_cast<float>(this->numEdges));
+uint64_t GraphSequence::inDegree(uint64_t v){
+    if(v >= n) return 0;
+    return S.rank(e, v);
 }

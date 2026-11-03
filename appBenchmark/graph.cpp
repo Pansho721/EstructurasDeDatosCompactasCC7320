@@ -1,70 +1,51 @@
-#include <iostream>
+#include <algorithm>
+#include <fstream>
 #include <iomanip>
-#include <vector>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 #include "graph.h"
 
-// These numbers are exclusive for the reddit hyperlinks body graph
-// Number of nodes in the graph
-// Number of edges in the graph
-int N = 35776;
-int E = 137821;
-
-BenchmarkDoc::BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt, int sPerEdge){
-    sizePerEdge = sPerEdge;
-    name = n;
-    ConstructionTime = constt;
-    adjTime = adjt;
-    rneighTime = rneight;
-    outDegreeTime = outt;
-    inDegreeTime = innt;
-    sPerEdge = sPerEdge;
+std::vector<Edge> loadEdges(const std::string& file, uint64_t& numNodes){
+    std::ifstream inputFile(file);
+    if(!inputFile.is_open()){
+        throw std::runtime_error("Error opening file: " + file);
+    }
+    std::vector<Edge> edges;
+    numNodes = 0;
+    std::string line;
+    while(std::getline(inputFile, line)){
+        std::istringstream iss(line);
+        uint64_t u, v;
+        if(!(iss >> u >> v)) continue;
+        edges.emplace_back(u, v);
+        numNodes = std::max(numNodes, std::max(u, v) + 1);
+    }
+    std::sort(edges.begin(), edges.end());
+    edges.erase(std::unique(edges.begin(), edges.end()), edges.end());
+    return edges;
 }
 
-BenchmarkDoc::~BenchmarkDoc(){}
+BenchmarkDoc::BenchmarkDoc(std::string n)
+    : name(std::move(n)), constructionTime(0), sizePerEdge(0),
+      adjTime(-1), neighTime(-1), rneighTime(-1), outDegreeTime(-1), inDegreeTime(-1) {}
+
+static void printTime(const std::string& label, float t){
+    std::cout << label;
+    if(t < 0) std::cout << "not supported" << std::endl;
+    else std::cout << t << " ns/query" << std::endl;
+}
 
 void BenchmarkDoc::print(){
-    std::cout << std::fixed << std::setprecision(9);
+    std::cout << std::fixed << std::setprecision(3);
     std::cout << "\n===== BENCHMARK RESULTS: " << name << " =====" << std::endl;
     std::cout << "Size per Edge: " << sizePerEdge << " bits" << std::endl;
     std::cout << "---------------------------------------------" << std::endl;
-    std::cout << "Construction Time: " << ConstructionTime << std::endl;
-    std::cout << "Adjacency Time: " << adjTime << std::endl;
-    std::cout << "Reverse Neighbors Time: " << rneighTime << std::endl;
-    std::cout << "Out Degree Time: " << outDegreeTime << std::endl;
-    std::cout << "In Degree Time: " << inDegreeTime << std::endl;
-}
-
-graph::graph(){}
-
-graph::~graph(){}
-
-bool graph::adj(int n, int m){
-    return false;
-}
-
-int graph::neighj(int n, int j){
-    return 0;
-}
-
-std::vector<int> graph::neigh(int n){
-    return std::vector<int>();
-}
-
-int graph::rneighj(int n, int j){
-    return 0;
-}
-std::vector<int> graph::rneigh(int n){
-    return std::vector<int>();
-}
-int graph::outDegree(int n){
-    return 0;
-}
-
-int graph::inDegree(int n){
-    return 0;
-}
-
-std::string graph::getName(){
-    return name;
+    std::cout << "Construction Time: " << constructionTime << " s" << std::endl;
+    printTime("Adjacency Time: ", adjTime);
+    printTime("Neighbor (neighj) Time: ", neighTime);
+    printTime("Reverse Neighbor (rneighj) Time: ", rneighTime);
+    printTime("Out Degree Time: ", outDegreeTime);
+    printTime("In Degree Time: ", inDegreeTime);
 }

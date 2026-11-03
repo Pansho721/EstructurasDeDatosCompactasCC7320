@@ -70,7 +70,7 @@ void permutation_t(int N){
 
 
         int sizeInBytes = perm.size_in_bytes();
-        int sizePerElement = sizeInBytes / N;
+        float sizePerElement = static_cast<float>(sizeInBytes) / N;
 
         std::cout << '[' << t << "], " << '[' << sizeInBytes << "], " << '[' << sizePerElement << "], " << '[' << constructionTime << "], "<< '[' << accessTime << "], "<< '[' << inverseTime << "], " << '[' << sum << "], " << std::endl;
         csvFile << t << ", "

@@ -1,42 +1,58 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
+using Edge = std::pair<uint64_t, uint64_t>;
 
-extern int N;
-extern int E;
+// Reads a "u v [w]" edge list. Returns the edges sorted by (u, v) without duplicates,
+// and sets numNodes to max node id + 1.
+std::vector<Edge> loadEdges(const std::string& file, uint64_t& numNodes);
 
 class BenchmarkDoc {
     public:
         std::string name;
-        float ConstructionTime;
+        float constructionTime;
+        float sizePerEdge;
+        // Average time per query in nanoseconds; negative means "not supported".
         float adjTime;
+        float neighTime;
         float rneighTime;
         float outDegreeTime;
         float inDegreeTime;
-        int sizePerEdge;
 
-        BenchmarkDoc(std::string n, float constt, float adjt, float rneight, float outt, float innt, int sizePerEdge);
-        ~BenchmarkDoc();
+        explicit BenchmarkDoc(std::string n);
         void print();
 };
 
 class graph {
-    private:
-        std::string name;
-
     public:
-        graph();
-        virtual ~graph();
+        graph() = default;
+        // sdsl rank/select supports keep pointers to their bitvectors, so graphs are not copyable.
+        graph(const graph&) = delete;
+        graph& operator=(const graph&) = delete;
+        virtual ~graph() = default;
 
-        virtual bool adj(int n, int m);
-        virtual int neighj(int n, int j);
-        virtual std::vector<int> neigh(int n);
-        virtual int rneighj(int n, int j);
-        virtual std::vector<int> rneigh(int n);
-        virtual int outDegree(int n);
-        virtual int inDegree(int n);
+        virtual std::string name() = 0;
+        virtual float sizePerEdge() = 0;
+        virtual bool supportsReverse() { return false; }
 
-        std::string getName();
+        virtual bool adj(uint64_t u, uint64_t v) = 0;
+        virtual int64_t neighj(uint64_t u, uint64_t j) = 0;
+        virtual std::vector<uint64_t> neigh(uint64_t u) = 0;
+        virtual uint64_t outDegree(uint64_t u) = 0;
+
+        // Reverse operations; only available when supportsReverse() is true.
+        virtual int64_t rneighj(uint64_t, uint64_t) { return -1; }
+        virtual std::vector<uint64_t> rneigh(uint64_t) { return {}; }
+        virtual uint64_t inDegree(uint64_t) { return 0; }
+
+        uint64_t numNodes() const { return n; }
+        uint64_t numEdges() const { return e; }
+
+    protected:
+        uint64_t n = 0;
+        uint64_t e = 0;
 };

@@ -1,28 +1,27 @@
 #pragma once
 
-#include <iostream>
-#include <utility>
-#include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
+
+#include <sdsl/sd_vector.hpp>
 
 #include "graph.h"
-#include "canonicalDS/sparseBitVector.h"
 
+// Adjacency matrix stored as a single Elias-Fano bitvector of length N*N,
+// with bit u*N+v set iff the edge (u, v) exists.
 class GraphBitVector : public graph {
     private:
-        int numNodes;
-        int numEdges;
-        std::vector<sparseBitVector> adjM;
-
-        void addEdge(std::pair<int, int> edge);
+        sdsl::sd_vector<> M;
+        sdsl::sd_vector<>::rank_1_type rankM;
+        sdsl::sd_vector<>::select_1_type selectM;
 
     public:
-        GraphBitVector(std::string file, int N, int E);
+        GraphBitVector(const std::vector<Edge>& edges, uint64_t N);
 
-        float sizePerEdge();
-        bool adj(int n, int m) override;
-        int neighj(int n, int j) override;
-        std::vector<int> neigh(int n) override;
-        int outDegree(int n) override;
+        std::string name() override { return "GraphBitVector"; }
+        float sizePerEdge() override;
+        bool adj(uint64_t u, uint64_t v) override;
+        int64_t neighj(uint64_t u, uint64_t j) override;
+        std::vector<uint64_t> neigh(uint64_t u) override;
+        uint64_t outDegree(uint64_t u) override;
 };
